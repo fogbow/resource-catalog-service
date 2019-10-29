@@ -1,1 +1,1 @@
-# resource-catalog-service
+# federated-network-service
