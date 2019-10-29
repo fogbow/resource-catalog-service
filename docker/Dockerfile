@@ -37,22 +37,22 @@
 #  git clone https://github.com/fogbow/resource-allocation-service.git && \
 #  (cd resource-allocation-service && git checkout $RAS_BRANCH && mvn install -Dmaven.test.skip=true)
 #
-## Installing Federated Network Service
+## Installing Resource Catalog Service
 #RUN \
-#  git clone https://github.com/fogbow/federated-network-service.git && \
-#  (cd federated-network-service && git checkout $FNS_BRANCH && mvn install -Dmaven.test.skip=true)
+#  git clone https://github.com/fogbow/resource-catalog-service.git && \
+#  (cd resource-catalog-service && git checkout $FNS_BRANCH && mvn install -Dmaven.test.skip=true)
 #
 ## Define working directory.
-#WORKDIR /root/federated-network-service
+#WORKDIR /root/resource-catalog-service
 #
 ## Generates the build number based on the commit checksum
 #RUN \
-#    (fns_build_number=$(git rev-parse --short 'HEAD') && \
+#    (rcs_build_number=$(git rev-parse --short 'HEAD') && \
 #    cd ../common && common_build_number=$(git rev-parse --short 'HEAD') && \
 #    cd ../authentication-service && as_build_number=$(git rev-parse --short 'HEAD') && \
 #    cd ../resource-allocation-service && ras_build_number=$(git rev-parse --short 'HEAD') && \
-#    cd /root/federated-network-service && \
-#    echo "build_number=fns-$fns_build_number-ras-$ras_build_number-as-$as_build_number-common-$common_build_number" > build)
+#    cd /root/resource-catalog-service && \
+#    echo "build_number=rcs-$rcs_build_number-ras-$ras_build_number-as-$as_build_number-common-$common_build_number" > build)
 #
 #RUN \
 #  mvn dependency:sources

@@ -38,7 +38,7 @@ buildNumber.properties
 mvnw.cmd
 
 ### Wrapper ###
-federated-network-service/
+resource-catalog-service/
 
 ### Configuration files ###
 src/main/resources/private
