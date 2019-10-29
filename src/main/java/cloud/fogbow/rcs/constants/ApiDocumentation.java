@@ -5,4 +5,9 @@ public class ApiDocumentation {
         public static final String API_TITLE = "Fogbow Resource Catalog Service (RCS) API";
         public static final String API_DESCRIPTION = "TODO";
     }
+
+    public static class Catalog {
+
+        public static final String GET_OPERATION = "Returns a catalog of services available";
+    }
 }
