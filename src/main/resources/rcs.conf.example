@@ -1,0 +1,11 @@
+# Membership Service
+# Required
+fogbow_membership_service_url=http://localhost:8080/ms/members
+
+# Provider Member Local
+# Required
+provider_id=local-xmpp-provider-id
+
+# Catalog Members File
+# Required
+members_file_path=

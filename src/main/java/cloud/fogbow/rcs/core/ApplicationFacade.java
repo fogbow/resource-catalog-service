@@ -1,19 +1,23 @@
 package cloud.fogbow.rcs.core;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import cloud.fogbow.common.exceptions.UnexpectedException;
 import cloud.fogbow.common.util.CryptoUtil;
 import cloud.fogbow.common.util.ServiceAsymmetricKeysHolder;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import cloud.fogbow.rcs.core.models.ProviderMember;
+import cloud.fogbow.rcs.core.service.CatalogService;
 
 public class ApplicationFacade {
-    private final Logger LOGGER = Logger.getLogger(ApplicationFacade.class);
-    private final String FAILED_REQUEST_BODY = "{\"message\":\"" + "%s" + "\"}";
+    
+	private static final Logger LOGGER = Logger.getLogger(ApplicationFacade.class);
 
     private static ApplicationFacade instance;
     private String buildNumber;
@@ -30,6 +34,11 @@ public class ApplicationFacade {
             return instance;
         }
     }
+    
+    public List<ProviderMember> getMembers(String systemUserToken) throws UnexpectedException {
+        // TODO authentication and authorization...
+        return new CatalogService().requestMembers();
+    }
 
     // version request
     public String getVersionNumber() {
@@ -45,4 +54,5 @@ public class ApplicationFacade {
             throw new UnexpectedException(e.getMessage(), e);
         }
     }
+    
 }
