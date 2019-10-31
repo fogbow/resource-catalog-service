@@ -60,7 +60,7 @@ public class CatalogService {
 
     @VisibleForTesting
     String getServiceEndpoint() {
-        return this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
+        return this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY) + "/members";
     }
 
     @VisibleForTesting
