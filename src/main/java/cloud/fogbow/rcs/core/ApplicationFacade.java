@@ -35,8 +35,7 @@ public class ApplicationFacade {
         }
     }
     
-    public List<ProviderMember> getMembers(String systemUserToken) throws UnexpectedException {
-        // TODO authentication and authorization...
+    public List<ProviderMember> getMembers() throws UnexpectedException {
         return new CatalogService().requestMembers();
     }
 

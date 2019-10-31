@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.rcs.api.http.CommonKeys;
+import cloud.fogbow.rcs.api.http.response.MembersList;
 import cloud.fogbow.rcs.constants.ApiDocumentation;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.constants.SystemConstants;
@@ -34,15 +35,11 @@ public class Catalog {
 
     @ApiOperation(value = ApiDocumentation.Catalog.GET_OPERATION)
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<ProviderMember>> getAllMembers(
-            @ApiParam(value = cloud.fogbow.common.constants.ApiDocumentation.Token.SYSTEM_USER_TOKEN) 
-            @RequestHeader(required = false, value = CommonKeys.SYSTEM_USER_TOKEN_HEADER_KEY) String systemUserToken)
-            throws FogbowException {
-
+    public ResponseEntity<MembersList> getAllMembers() throws FogbowException {
         try {
             LOGGER.debug(String.format(Messages.Info.GETTING_ALL_MEMBERS));
-            List<ProviderMember> members = ApplicationFacade.getInstance().getMembers(systemUserToken);
-            return new ResponseEntity<>(members, HttpStatus.OK);
+            List<ProviderMember> members = ApplicationFacade.getInstance().getMembers();
+            return new ResponseEntity<>(new MembersList(members), HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.debug(String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage()), e);
             throw e;
