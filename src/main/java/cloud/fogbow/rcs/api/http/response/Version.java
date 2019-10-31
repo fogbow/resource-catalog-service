@@ -3,7 +3,7 @@ package cloud.fogbow.rcs.api.http.response;
 import io.swagger.annotations.ApiModelProperty;
 
 public class Version {
-    @ApiModelProperty(example = "v.2.0.0-rcs-3191466-ras-ec6bf564-as-c803775-common-4e0d74e")
+    @ApiModelProperty(example = "v.1.0.0-rcs-3191466-ras-ec6bf564-as-c803775-common-4e0d74e")
     private String version;
 
     public Version() {}

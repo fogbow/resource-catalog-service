@@ -36,8 +36,8 @@ public class CatalogService {
         HttpResponse httpResponse = null;
         try {
             httpResponse = HttpRequestClient.doGenericRequest(HttpMethod.GET, endpoint, headers, body);
-            MembershipServiceResponse msResponse = MembershipServiceResponse.fromJson(httpResponse.getContent());
-            return listProviderMembers(msResponse);
+            MembershipServiceResponse response = MembershipServiceResponse.fromJson(httpResponse.getContent());
+            return listProviderMembers(response);
         } catch (Exception e) {
             String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
             throw new UnexpectedException(message, e);

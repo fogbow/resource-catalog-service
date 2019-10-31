@@ -4,7 +4,7 @@
 
 # Membership Service
 # Required
-fogbow_membership_service_url=http://localhost:8080/ms/members
+ms_url=http://localhost:8080/ms/members
 
 # Provider Member Local
 # Required

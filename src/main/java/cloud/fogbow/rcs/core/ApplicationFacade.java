@@ -17,7 +17,7 @@ import cloud.fogbow.rcs.core.service.CatalogService;
 
 public class ApplicationFacade {
     
-	private static final Logger LOGGER = Logger.getLogger(ApplicationFacade.class);
+    private static final Logger LOGGER = Logger.getLogger(ApplicationFacade.class);
 
     private static ApplicationFacade instance;
     private String buildNumber;
