@@ -1,10 +1,9 @@
 # ----- Fill the required information and move it to ./private/rcs.conf -----
 
-
-
-# Membership Service
+# Membership Service configuration
 # Required
-ms_url=http://localhost:8080/ms/members
+ms_url=http://localhost
+ms_port=8080
 
 # Provider Member Local
 # Required

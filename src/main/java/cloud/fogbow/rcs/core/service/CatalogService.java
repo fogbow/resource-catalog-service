@@ -21,6 +21,8 @@ import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.ProviderMember;
 
 public class CatalogService {
+    public static final String MEMBERSHIP_SERVICE_ENDPOINT = "/ms/members";
+    public static final String PORT_SEPARATOR = ":";
 
     private Properties properties;
 
@@ -60,7 +62,10 @@ public class CatalogService {
 
     @VisibleForTesting
     String getServiceEndpoint() {
-        return this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
+        String msUrl = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
+        String msPort = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_PORT_KEY);
+
+        return msUrl + PORT_SEPARATOR + msPort + MEMBERSHIP_SERVICE_ENDPOINT;
     }
 
     @VisibleForTesting
