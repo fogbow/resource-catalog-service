@@ -49,11 +49,8 @@ public class CatalogService {
         List<ProviderMember> members = new ArrayList<ProviderMember>();
         String localMember = getLocalMember();
         for (String member : response.getMembers()) {
-            if (member.equals(localMember)) {
-                members.add(new ProviderMember(member, true));
-            } else {
-                members.add(new ProviderMember(member, false));
-            }
+            boolean isLocal = member.equals(localMember);
+            members.add(new ProviderMember(member, isLocal));
         }
         return members;
     }
