@@ -38,6 +38,10 @@ public class ApplicationFacade {
     public List<ProviderMember> getMembers() throws UnexpectedException {
         return new CatalogService().requestMembers();
     }
+    
+    public ProviderMember getLocalProvider() throws UnexpectedException {
+        return new CatalogService().getLocalProviderAddress();
+    }
 
     // version request
     public String getVersionNumber() {
