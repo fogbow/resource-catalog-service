@@ -1,5 +1,7 @@
 package cloud.fogbow.rcs.core.service;
 
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,9 @@ import cloud.fogbow.rcs.core.models.ProviderMember;
 
 public class CatalogService {
 
+    private static final String URL_PREFFIX_ADDRESS = "https://";
+    private static final String DOC_ENDPOINT = "/doc";
+    
     private Properties properties;
 
     public CatalogService() {
@@ -44,15 +49,26 @@ public class CatalogService {
         }
     }
 
+    public ProviderMember getLocalProviderAddress() throws UnexpectedException {
+        String providerURL = URL_PREFFIX_ADDRESS + getLocalMember();
+        try {
+            InetAddress address = InetAddress.getByName(new URL(providerURL).getHost());
+            return new ProviderMember(getLocalMember(), URL_PREFFIX_ADDRESS + address.getCanonicalHostName() + DOC_ENDPOINT);
+        } catch (Exception e) {
+            String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
+            throw new UnexpectedException(message, e);
+        }
+    }
+    
     @VisibleForTesting
     List<ProviderMember> listProviderMembers(MembershipServiceResponse response) {
         List<ProviderMember> members = new ArrayList<ProviderMember>();
         String localMember = getLocalMember();
         for (String member : response.getMembers()) {
             if (member.equals(localMember)) {
-                members.add(new ProviderMember(member, true));
+                members.add(new ProviderMember(member));
             } else {
-                members.add(new ProviderMember(member, false));
+                members.add(new ProviderMember(member));
             }
         }
         return members;
