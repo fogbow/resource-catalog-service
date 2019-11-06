@@ -3,14 +3,18 @@ package cloud.fogbow.rcs.core.models;
 public class ProviderMember {
 
     private String member;
-    private boolean local;
+    private String location;
 
     public ProviderMember() {
     }
-
-    public ProviderMember(String member, boolean local) {
+    
+    public ProviderMember(String member) {
         this.member = member;
-        this.local = local;
+    }
+    
+    public ProviderMember(String member, String location) {
+        this.member = member;
+        this.location = location;
     }
 
     public String getMember() {
@@ -21,11 +25,11 @@ public class ProviderMember {
         this.member = member;
     }
 
-    public boolean isLocal() {
-        return local;
+    public String getLocation() {
+        return location;
     }
 
-    public void setLocal(boolean local) {
-        this.local = local;
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
