@@ -12,7 +12,7 @@ import cloud.fogbow.common.util.ServiceAsymmetricKeysHolder;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
-import cloud.fogbow.rcs.core.models.ProviderMember;
+import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.service.CatalogService;
 
 public class ApplicationFacade {
@@ -35,14 +35,14 @@ public class ApplicationFacade {
         }
     }
     
-    public List<ProviderMember> getMembers() throws UnexpectedException {
+    public List<String> getMembers() throws UnexpectedException {
         return new CatalogService().requestMembers();
     }
     
-    public ProviderMember getLocalProvider() throws UnexpectedException {
-        return new CatalogService().getLocalProviderAddress();
+    public List<Service> getServicesFrom(String member) throws UnexpectedException {
+        return new CatalogService().getMemberServices(member);
     }
-
+    
     // version request
     public String getVersionNumber() {
         return SystemConstants.API_VERSION_NUMBER + "-" + this.buildNumber;
