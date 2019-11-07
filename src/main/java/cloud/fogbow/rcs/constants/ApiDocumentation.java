@@ -8,22 +8,18 @@ public class ApiDocumentation {
     }
     
     public static class Model {
-        public static final String MEMBERS_LIST = "{\n" 
-               + "    \"members\": [\n" 
-               + "        \"member1\",\n" 
-               + "        \"member2\",\n" 
-               + "        \"member3\"\n" 
-               + "    ]\n" 
-               + "}";
+        public static final String MEMBERS_LIST = "[\n" + 
+                "    \"services-atm-prod\",\n" + 
+                "    \"member2\",\n" + 
+                "    \"member3\"\n" + 
+                "]";
         
-        public static final String SERVICES_LIST = "{\n"
-               + "    \"services\": [\n"
-               + "        {\n"
-               + "            \"serviceType\": \"LOCAL\",\n"
-               + "            \"location\": \"https://member1.org/doc\"\n"
-               + "        }\n"
-               + "    ]\n"
-               + "}";
+        public static final String SERVICES_LIST = "[\n" + 
+                "    {\n" + 
+                "        \"serviceType\": \"LOCAL\",\n" + 
+                "        \"location\": \"https://member1.org/doc\"\n" + 
+                "    }\n" + 
+                "]";
     }
 
     public static class Catalog {
