@@ -1,9 +1,11 @@
 package cloud.fogbow.rcs.core.models;
 
+import java.util.List;
+
 public class ProviderMember {
 
     private String member;
-    private String location;
+    private List<Service> services;
 
     public ProviderMember() {
     }
@@ -12,11 +14,11 @@ public class ProviderMember {
         this.member = member;
     }
     
-    public ProviderMember(String member, String location) {
+    public ProviderMember(String member, List<Service> services) {
         this.member = member;
-        this.location = location;
+        this.services = services;
     }
-
+    
     public String getMember() {
         return member;
     }
@@ -25,11 +27,11 @@ public class ProviderMember {
         this.member = member;
     }
 
-    public String getLocation() {
-        return location;
+    public List<Service> getServices() {
+        return services;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setServices(List<Service> services) {
+        this.services = services;
     }
 }
