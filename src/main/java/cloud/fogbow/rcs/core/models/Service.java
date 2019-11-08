@@ -13,8 +13,11 @@ public class Service {
         this.location = location;
     }
 
-    public ServiceType getServiceType() {
-        return serviceType;
+    /**
+     * @return the representation of the enum in a string.
+     */
+    public String getServiceType() {
+        return serviceType.getName();
     }
     
     public void setServiceType(ServiceType serviceType) {
