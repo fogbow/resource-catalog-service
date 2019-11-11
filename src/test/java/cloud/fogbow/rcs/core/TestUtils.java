@@ -9,19 +9,20 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 
+import cloud.fogbow.rcs.core.models.Service;
+import cloud.fogbow.rcs.core.models.ServiceType;
+
 public class TestUtils {
     
-    public static final String BASE_URL = "/";
-    public static final String EMPTY_STRING = "";
-    public static final String FAKE_LOCAL_MEMBER_URL = "https://member1.org/doc";
-    public static final String MEMBER_ONE = "member1";
-    public static final String MEMBER_TWO = "member2";
-    public static final String MEMBER_THREE = "member3";
-    public static final String URL_MEMBER_ID_ENDPOINT = BASE_URL.concat(MEMBER_ONE);
-    
-    private static final String RESOURCES_API_HTTP_RESPONSE_PATH = "cloud/fogbow/rcs/api/http/response/";
+    private static final String EMPTY_STRING = "";
+    private static final String FAKE_LOCAL_MEMBER_URL = "https://member1.org/doc";
     private static final String MEMBERS_LIST_JSON_FILE_NAME = "membersList.json";
+    private static final String RESOURCES_API_HTTP_RESPONSE_PATH = "cloud/fogbow/rcs/api/http/response/";
     private static final String SERVICES_LIST_JSON_FILE_NAME = "localServicesList.json";
+    private static final String VERSION_NUMBER_JSON_FILE_NAME = "versionNumber.json";
+    
+    public static final String[] MEMBERS = { "member1", "member2", "member3" }; 
+    public static final String BASE_URL = "/";
 
     public static ApplicationFacade mockApplicationFacade() {
         ApplicationFacade facade = Mockito.mock(ApplicationFacade.class);
@@ -30,16 +31,26 @@ public class TestUtils {
         return facade;
     }
     
-    public static String getLocalServicesListResponseJson(String type, String url) throws IOException {
-        String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(SERVICES_LIST_JSON_FILE_NAME));
-        String rawJson = readFileAsString(pathFile);
-        return String.format(rawJson, type, url);
+    public static Service createLocalService() {
+        return new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
     }
     
-    public static String getMembersListResponseJson(String[] members) throws IOException {
+    public static String getLocalServicesListResponseContent() throws IOException {
+        String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(SERVICES_LIST_JSON_FILE_NAME));
+        String rawJson = readFileAsString(pathFile);
+        return String.format(rawJson, ServiceType.LOCAL.getName(), FAKE_LOCAL_MEMBER_URL);
+    }
+    
+    public static String getMembersListResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(MEMBERS_LIST_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);
-        return String.format(rawJson, members);
+        return String.format(rawJson, MEMBERS);
+    }
+    
+    public static String getVersionNumberResponseContent() throws IOException {
+        String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(VERSION_NUMBER_JSON_FILE_NAME));
+        String rawJson = readFileAsString(pathFile);
+        return String.format(rawJson, ApplicationFacade.getInstance().getVersionNumber());
     }
     
     private static String getPathFile(String path) {

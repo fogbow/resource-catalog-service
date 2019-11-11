@@ -20,13 +20,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import cloud.fogbow.rcs.core.ApplicationFacade;
 import cloud.fogbow.rcs.core.TestUtils;
 import cloud.fogbow.rcs.core.models.Service;
-import cloud.fogbow.rcs.core.models.ServiceType;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ ApplicationFacade.class })
 @PowerMockRunnerDelegate(SpringRunner.class)
 @WebMvcTest(Catalog.class)
 public class CatalogTest {
+    
+    private static final int LOCAL_MEMBER_INDEX = 0;
+    private static final String LOCAL_MEMBER_ID_ENDPOINT = TestUtils.BASE_URL.concat(TestUtils.MEMBERS[LOCAL_MEMBER_INDEX]);
     
     @Autowired
     private MockMvc mockMvc;
@@ -39,13 +41,12 @@ public class CatalogTest {
     @Test
     public void testGetAllMembers() throws Exception {
         // set up
-        String[] array = { TestUtils.MEMBER_ONE, TestUtils.MEMBER_TWO, TestUtils.MEMBER_THREE };
-        List<String> members = Arrays.asList(array);
+        List<String> members = Arrays.asList(TestUtils.MEMBERS);
         
         this.facade = TestUtils.mockApplicationFacade();
         Mockito.doReturn(members).when(this.facade).getMembers();
         
-        String expected = TestUtils.getMembersListResponseJson(array);
+        String expected = TestUtils.getMembersListResponseContent();
 
         // exercise
         this.mockMvc.perform(MockMvcRequestBuilders.get(TestUtils.BASE_URL.concat(Catalog.ENDPOINT)))
@@ -60,21 +61,17 @@ public class CatalogTest {
     @Test
     public void testGetAllServices() throws Exception {
         // set up
-        ServiceType type = ServiceType.LOCAL;
-        String url = TestUtils.FAKE_LOCAL_MEMBER_URL;
-        Service service = new Service(type, url);
-        
         List<Service> services = new ArrayList<>();
-        services.add(service);
+        services.add(TestUtils.createLocalService());
         
         this.facade = TestUtils.mockApplicationFacade();
-        Mockito.doReturn(services).when(this.facade).getServicesFrom(Mockito.eq(TestUtils.MEMBER_ONE));
+        Mockito.doReturn(services).when(this.facade).getServicesFrom(Mockito.eq(TestUtils.MEMBERS[LOCAL_MEMBER_INDEX]));
 
-        String expected = TestUtils.getLocalServicesListResponseJson(type.getName(), url);
+        String expected = TestUtils.getLocalServicesListResponseContent();
 
         // exercise
         this.mockMvc
-                .perform(MockMvcRequestBuilders.get(TestUtils.BASE_URL.concat(Catalog.ENDPOINT).concat(TestUtils.URL_MEMBER_ID_ENDPOINT)))
+                .perform(MockMvcRequestBuilders.get(TestUtils.BASE_URL.concat(Catalog.ENDPOINT).concat(LOCAL_MEMBER_ID_ENDPOINT)))
                 // verify
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
