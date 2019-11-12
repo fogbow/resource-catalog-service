@@ -9,11 +9,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(Version.class)
-public class VersionTest {
+public class VersionTest extends BaseUnitTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -24,7 +25,7 @@ public class VersionTest {
     @Test
     public void testGetVersion() throws Exception {
         // set up
-        String expected = TestUtils.getVersionNumberResponseContent();
+        String expected = this.testUtils.getVersionNumberResponseContent();
 
         // exercise
         this.mockMvc.perform(MockMvcRequestBuilders.get(TestUtils.BASE_URL + Version.VERSION_ENDPOINT))

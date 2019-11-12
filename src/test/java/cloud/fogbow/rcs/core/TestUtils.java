@@ -23,37 +23,39 @@ public class TestUtils {
     
     public static final String[] MEMBERS = { "member1", "member2", "member3" }; 
     public static final String BASE_URL = "/";
+    public static final int LOCAL_MEMBER_INDEX = 0;
+    public static final int RUN_ONCE = 1;
 
-    public static ApplicationFacade mockApplicationFacade() {
+    public ApplicationFacade mockApplicationFacade() {
         ApplicationFacade facade = Mockito.mock(ApplicationFacade.class);
         PowerMockito.mockStatic(ApplicationFacade.class);
         BDDMockito.given(ApplicationFacade.getInstance()).willReturn(facade);
         return facade;
     }
     
-    public static Service createLocalService() {
+    public Service createLocalService() {
         return new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
     }
     
-    public static String getLocalServicesListResponseContent() throws IOException {
+    public String getLocalServicesListResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(SERVICES_LIST_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);
         return String.format(rawJson, ServiceType.LOCAL.getName(), FAKE_LOCAL_MEMBER_URL);
     }
     
-    public static String getMembersListResponseContent() throws IOException {
+    public String getMembersListResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(MEMBERS_LIST_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);
         return String.format(rawJson, MEMBERS);
     }
     
-    public static String getVersionNumberResponseContent() throws IOException {
+    public String getVersionNumberResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(VERSION_NUMBER_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);
         return String.format(rawJson, ApplicationFacade.getInstance().getVersionNumber());
     }
     
-    private static String getPathFile(String path) {
+    private String getPathFile(String path) {
         String rootPath = Thread.currentThread().getContextClassLoader()
                 .getResource(EMPTY_STRING)
                 .getPath();
@@ -61,7 +63,7 @@ public class TestUtils {
         return rootPath.concat(path);
     }
     
-    private static String readFileAsString(final String fileName) throws IOException {
+    private String readFileAsString(final String fileName) throws IOException {
         Path path = Paths.get(fileName);
         byte[] bytes = Files.readAllBytes(path);
         return new String(bytes);

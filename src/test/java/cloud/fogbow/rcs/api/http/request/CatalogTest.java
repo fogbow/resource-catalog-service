@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,22 +17,26 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import cloud.fogbow.rcs.core.ApplicationFacade;
+import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
 import cloud.fogbow.rcs.core.models.Service;
 
-@RunWith(PowerMockRunner.class)
 @PrepareForTest({ ApplicationFacade.class })
 @PowerMockRunnerDelegate(SpringRunner.class)
 @WebMvcTest(Catalog.class)
-public class CatalogTest {
+public class CatalogTest extends BaseUnitTests {
     
-    private static final int LOCAL_MEMBER_INDEX = 0;
-    private static final String LOCAL_MEMBER_ID_ENDPOINT = TestUtils.BASE_URL.concat(TestUtils.MEMBERS[LOCAL_MEMBER_INDEX]);
+    private static final String LOCAL_MEMBER_ID_ENDPOINT = TestUtils.BASE_URL.concat(TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX]);
     
     @Autowired
     private MockMvc mockMvc;
     
     private ApplicationFacade facade;
+    
+    @Before
+    public void setUp() {
+        this.facade = this.testUtils.mockApplicationFacade();
+    }
     
     // test case: When executing a GET request for the "/rcs/members" endpoint, it
     // must invoke the getAllMembers method by returning the Status OK and the
@@ -42,11 +45,9 @@ public class CatalogTest {
     public void testGetAllMembers() throws Exception {
         // set up
         List<String> members = Arrays.asList(TestUtils.MEMBERS);
-        
-        this.facade = TestUtils.mockApplicationFacade();
         Mockito.doReturn(members).when(this.facade).getMembers();
         
-        String expected = TestUtils.getMembersListResponseContent();
+        String expected = this.testUtils.getMembersListResponseContent();
 
         // exercise
         this.mockMvc.perform(MockMvcRequestBuilders.get(TestUtils.BASE_URL.concat(Catalog.ENDPOINT)))
@@ -62,12 +63,10 @@ public class CatalogTest {
     public void testGetAllServices() throws Exception {
         // set up
         List<Service> services = new ArrayList<>();
-        services.add(TestUtils.createLocalService());
-        
-        this.facade = TestUtils.mockApplicationFacade();
-        Mockito.doReturn(services).when(this.facade).getServicesFrom(Mockito.eq(TestUtils.MEMBERS[LOCAL_MEMBER_INDEX]));
+        services.add(this.testUtils.createLocalService());
+        Mockito.doReturn(services).when(this.facade).getServicesFrom(Mockito.eq(TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX]));
 
-        String expected = TestUtils.getLocalServicesListResponseContent();
+        String expected = this.testUtils.getLocalServicesListResponseContent();
 
         // exercise
         this.mockMvc
