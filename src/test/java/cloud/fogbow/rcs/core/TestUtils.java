@@ -15,7 +15,6 @@ import cloud.fogbow.rcs.core.models.ServiceType;
 public class TestUtils {
     
     private static final String EMPTY_STRING = "";
-    private static final String FAKE_LOCAL_MEMBER_URL = "https://member1.org/doc";
     private static final String MEMBERS_LIST_JSON_FILE_NAME = "membersList.json";
     private static final String RESOURCES_API_HTTP_RESPONSE_PATH = "cloud/fogbow/rcs/api/http/response/";
     private static final String SERVICES_LIST_JSON_FILE_NAME = "localServicesList.json";
@@ -23,6 +22,9 @@ public class TestUtils {
     
     public static final String[] MEMBERS = { "member1", "member2", "member3" }; 
     public static final String BASE_URL = "/";
+    public static final String FAKE_LOCAL_MEMBER_URL = "https://member1.org/doc";
+    public static final String MEMBERSHIP_SERVICE_ENDPOINT = "http://localhost:8080/ms/members";
+    
     public static final int LOCAL_MEMBER_INDEX = 0;
     public static final int RUN_ONCE = 1;
 
