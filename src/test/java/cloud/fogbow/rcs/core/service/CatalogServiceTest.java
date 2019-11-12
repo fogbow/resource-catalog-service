@@ -3,6 +3,7 @@ package cloud.fogbow.rcs.core.service;
 import cloud.fogbow.common.exceptions.UnexpectedException;
 import cloud.fogbow.common.util.connectivity.HttpRequestClient;
 import cloud.fogbow.common.util.connectivity.HttpResponse;
+import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.ProviderMember;
 import org.junit.Assert;
@@ -48,19 +49,19 @@ public class CatalogServiceTest {
         PowerMockito.when(MembershipServiceResponse.fromJson(Mockito.anyString())).thenReturn(Mockito.mock(MembershipServiceResponse.class));
 
         BDDMockito.given(HttpRequestClient.doGenericRequest(Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any(HashMap.class))).willReturn(httpResponse);
+                Mockito.eq(new HashMap()))).willReturn(httpResponse);
 
-        Mockito.doReturn(new ArrayList<>()).when(catalogService).listProviderMembers(Mockito.any());
+        Mockito.doReturn(new ArrayList<>()).when(this.catalogService).listProviderMembers(Mockito.any());
 
         // exercise
-        catalogService.requestMembers();
+        this.catalogService.requestMembers();
 
         // verify
-        Mockito.verify(catalogService).listProviderMembers(Mockito.any());
+        Mockito.verify(this.catalogService).listProviderMembers(Mockito.any());
     }
 
     // test case: in case something wrong happen's it should throw an UnexpectedException
-    @Test(expected = UnexpectedException.class)
+    @Test
     public void testRequestMembersFail() throws Exception {
         // setup
         PowerMockito.mockStatic(HttpRequestClient.class);
@@ -71,13 +72,18 @@ public class CatalogServiceTest {
         PowerMockito.when(MembershipServiceResponse.fromJson(Mockito.anyString())).thenReturn(Mockito.mock(MembershipServiceResponse.class));
 
         BDDMockito.given(HttpRequestClient.doGenericRequest(Mockito.any(), Mockito.any(), Mockito.any(),
-                Mockito.any(HashMap.class))).willThrow(Exception.class);
+                Mockito.eq(new HashMap()))).willThrow(Exception.class);
 
-        Mockito.doReturn(new ArrayList<>()).when(catalogService).listProviderMembers(Mockito.any());
+        Mockito.doReturn(new ArrayList<>()).when(this.catalogService).listProviderMembers(Mockito.any());
 
         // exercise
-        catalogService.requestMembers();
-        Assert.fail();
+        try {
+            this.catalogService.requestMembers();
+            Assert.fail();
+        } catch (UnexpectedException ex) {
+            // verify
+            Assert.assertEquals(String.format(Messages.Exception.GENERIC_EXCEPTION, null), ex.getMessage());
+        }
     }
 
     // test case: listProviderMembers should iterate over the response and return a list with
@@ -86,10 +92,10 @@ public class CatalogServiceTest {
     public void testListProviderMembers() {
         // setup
         MembershipServiceResponse response = createMockedMembershipServiceResponse();
-        Mockito.doReturn(FAKE_LOCAL_MEMBER).when(catalogService).getLocalMember();
+        Mockito.doReturn(FAKE_LOCAL_MEMBER).when(this.catalogService).getLocalMember();
 
         // exercise
-        List<ProviderMember> providerMembers = catalogService.listProviderMembers(response);
+        List<ProviderMember> providerMembers = this.catalogService.listProviderMembers(response);
 
         // verify
         Mockito.verify(response).getMembers();
