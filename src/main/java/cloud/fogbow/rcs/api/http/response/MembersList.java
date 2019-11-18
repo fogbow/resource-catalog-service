@@ -2,25 +2,25 @@ package cloud.fogbow.rcs.api.http.response;
 
 import java.util.List;
 
-import cloud.fogbow.rcs.core.models.ProviderMember;
+import cloud.fogbow.rcs.constants.ApiDocumentation;
 import io.swagger.annotations.ApiModelProperty;
 
 public class MembersList {
     
-    @ApiModelProperty()
-    List<ProviderMember> members;
-    
+    @ApiModelProperty(example = ApiDocumentation.Model.MEMBERS_LIST)
+    private List<String> members;
+
     public MembersList() {}
-    
-    public MembersList(List<ProviderMember> members) {
+
+    public MembersList(List<String> members) {
         this.members = members;
     }
 
-    public List<ProviderMember> getMembers() {
+    public List<String> getMembers() {
         return members;
     }
 
-    public void setMembers(List<ProviderMember> members) {
+    public void setMembers(List<String> members) {
         this.members = members;
     }
 }

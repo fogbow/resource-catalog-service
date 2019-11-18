@@ -1,5 +1,7 @@
 package cloud.fogbow.rcs.core.service;
 
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +20,17 @@ import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
-import cloud.fogbow.rcs.core.models.ProviderMember;
+import cloud.fogbow.rcs.core.models.Service;
+import cloud.fogbow.rcs.core.models.ServiceType;
 
 public class CatalogService {
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "/ms/members";
     public static final String PORT_SEPARATOR = ":";
 
+    private static final String URL_PREFFIX_ADDRESS = "https://";
+    private static final String DOC_ENDPOINT = "/doc";
+    private static final int FIRST_POSITION = 0;
+    
     private Properties properties;
 
     public CatalogService() {
@@ -31,7 +38,7 @@ public class CatalogService {
         this.properties = PropertiesUtil.readProperties(confFilePath);
     }
 
-    public List<ProviderMember> requestMembers() throws UnexpectedException {
+    public List<String> requestMembers() throws UnexpectedException {
         String endpoint = getServiceEndpoint();
         Map<String, String> headers = new HashMap<>();
         Map<String, String> body = new HashMap<>();
@@ -45,16 +52,37 @@ public class CatalogService {
             throw new UnexpectedException(message, e);
         }
     }
-
+    
+    public List<Service> getMemberServices(String member) throws UnexpectedException {
+        List<Service> services = new ArrayList<>();
+        if (member.equals(getLocalMember())) {
+            services.add(getLocalCatalog());
+        }
+        return services;
+    }
+    
     @VisibleForTesting
-    List<ProviderMember> listProviderMembers(MembershipServiceResponse response) {
-        List<ProviderMember> members = new ArrayList<ProviderMember>();
+    Service getLocalCatalog() throws UnexpectedException {
+        String providerURL = URL_PREFFIX_ADDRESS + getLocalMember();
+        try {
+            InetAddress address = InetAddress.getByName(new URL(providerURL).getHost());
+            return new Service(ServiceType.LOCAL, URL_PREFFIX_ADDRESS + address.getCanonicalHostName() + DOC_ENDPOINT);
+        } catch (Exception e) {
+            String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
+            throw new UnexpectedException(message, e);
+        }
+    }
+    
+    @VisibleForTesting
+    List<String> listProviderMembers(MembershipServiceResponse response) {
+        List<String> members = new ArrayList<>();
         String localMember = getLocalMember();
         for (String member : response.getMembers()) {
             if (member.equals(localMember)) {
-                members.add(new ProviderMember(member, true));
+                // add local member always at beginning of the list
+                members.add(FIRST_POSITION, member);
             } else {
-                members.add(new ProviderMember(member, false));
+                members.add(member);
             }
         }
         return members;
