@@ -1,5 +1,6 @@
 package cloud.fogbow.rcs.core;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -57,5 +58,8 @@ public class ApplicationFacade {
             throw new UnexpectedException(e.getMessage(), e);
         }
     }
-    
+
+    public String getService(String member, String service) throws FileNotFoundException {
+        return new CatalogService().getServiceCatalog(member, service);
+    }
 }
