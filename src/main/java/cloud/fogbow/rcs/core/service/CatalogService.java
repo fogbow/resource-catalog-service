@@ -1,7 +1,5 @@
 package cloud.fogbow.rcs.core.service;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,10 +22,11 @@ import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.constants.SystemConstants;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
-import com.google.gson.Gson;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
 public class CatalogService {
     
@@ -39,6 +38,10 @@ public class CatalogService {
     public static final String DOC_ENDPOINT = "/doc";
     
     private static final int FIRST_POSITION = 0;
+    private static final String SERVICE_ENDPOINT_FORMAT = "/rcs/service/%s/%s";
+    private static final String SERVICE_URL_FORMAT = "http://%s:%s/v2/api-docs";
+    private static final String FORMAT_SERVICE_S_IP_KEY = "%s_ip";
+    private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
     
     private Properties properties;
 
@@ -59,16 +62,50 @@ public class CatalogService {
         if (member.equals(getLocalMember())) {
             services.add(getLocalCatalog());
         } else {
-            LOGGER.info("Remote member service not yet implemented");
+            services.addAll(getRemoteCatalogFrom(member));
         }
         return services;
     }
 
-    public String getServiceCatalog(String member, String service) throws FileNotFoundException {
-        String specPath = this.properties.getProperty("ras_json");
-        Gson gson = new Gson();
-        Object obj = gson.fromJson(new FileReader(specPath), Object.class);
-        return gson.toJson(obj);
+    public String getServiceCatalog(String member, String service) throws FogbowException {
+        String memberServiceKey = member.concat("-").concat(service); // FIXME migrate this string to a constant.
+        ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
+        boolean hasCached = CacheServiceHolder.getInstance().has(memberServiceKey);
+        if (!hasCached) {
+            RemoteGetServiceRequest remoteRequest = RemoteGetServiceRequest.builder()
+                    .member(member)
+                    .serviceType(serviceType)
+                    .build();
+            
+            remoteRequest.send();
+        }
+        return CacheServiceHolder.getInstance().get(memberServiceKey);
+    }
+    
+    public String requestService(String member, ServiceType serviceType) {
+        HttpResponse response = null;
+        try {
+            String serviceIp = this.properties.getProperty(String.format(FORMAT_SERVICE_S_IP_KEY, serviceType.getName()));
+            String servicePort = this.properties.getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));;
+            String serviceUrl = String.format(SERVICE_URL_FORMAT, serviceIp, servicePort);
+            response = doRequestMembers(serviceUrl); // FIXME renamed this method to doGetRequestFrom
+        } catch (Exception e) {
+            LOGGER.error(String.format(Messages.Error.ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S, 
+                    serviceType.name(), member), e);
+        }
+        return response.getContent();
+    }
+    
+    @VisibleForTesting
+    List<Service> getRemoteCatalogFrom(String member) {
+        List<Service> services = new ArrayList<>();
+        ServiceType[] serviceTypes = { ServiceType.AS, ServiceType.FNS, ServiceType.MS, ServiceType.RAS };
+        for (ServiceType serviceType : serviceTypes) {
+            String endpoint = String.format(SERVICE_ENDPOINT_FORMAT, member, serviceType.getName());
+            Service service = new Service(serviceType, endpoint);
+            services.add(service);
+        }
+        return services;
     }
 
     @VisibleForTesting
