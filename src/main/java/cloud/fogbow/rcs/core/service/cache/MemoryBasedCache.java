@@ -1,6 +1,8 @@
 package cloud.fogbow.rcs.core.service.cache;
 
 import cloud.fogbow.common.exceptions.FogbowException;
+import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
+import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.core.PropertiesHolder;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -9,16 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults.CACHE_EXPIRATION_TIME_DEFAULT;
-import static cloud.fogbow.rcs.constants.ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY;
-
 public class MemoryBasedCache<T> implements CacheService<T> {
     private final int CACHE_VALIDITY;
     private Map<String, CacheEntry> cacheMap;
 
     public MemoryBasedCache() {
         Properties properties = PropertiesHolder.getInstance().getProperties();
-        this.CACHE_VALIDITY = Integer.parseInt(properties.getProperty(CACHE_EXPIRATION_TIME_KEY, CACHE_EXPIRATION_TIME_DEFAULT));
+        this.CACHE_VALIDITY = Integer.parseInt(properties.getProperty(ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY,
+                ConfigurationPropertyDefaults.CACHE_EXPIRATION_TIME_DEFAULT));
 
         this.cacheMap = new HashMap<>();
     }
@@ -56,13 +56,17 @@ public class MemoryBasedCache<T> implements CacheService<T> {
 
         public CacheEntry(T data) {
             this.data = data;
-            Date now = new Date();
-            this.expiration = DateUtils.addSeconds(now, CACHE_VALIDITY);
+            this.expiration = getExpirationDate();
         }
 
         public boolean expired() {
             Date now = new Date();
             return now.getTime() >= this.expiration.getTime();
+        }
+
+        private Date getExpirationDate() {
+            Date now = new Date();
+            return DateUtils.addMinutes(now, CACHE_VALIDITY);
         }
 
         public T getData() {
