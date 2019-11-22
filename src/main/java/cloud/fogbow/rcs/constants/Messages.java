@@ -17,4 +17,8 @@ public class Messages {
         public static final String SEND_SUCCESSFULLY = "Send operation executed successfully.";
         public static final String SENDING_REMOTE_REQUEST_FROM_MEMBER_S = "Sending remote request from member: %s.";
     }
+
+    public static class Error {
+        public static final String NO_PACKET_SENDER = "No packet sender.";
+    }
 }
