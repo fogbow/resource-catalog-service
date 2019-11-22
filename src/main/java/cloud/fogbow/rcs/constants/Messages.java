@@ -3,7 +3,8 @@ package cloud.fogbow.rcs.constants;
 public class Messages {
     
     public static class Exception {
-        public static final String GENERIC_EXCEPTION = "Operation returned error: %s.";
+        public static final String GENERIC_EXCEPTION = "Operation returned error: %s."; // FIXME change this constant to GENERIC_EXCEPTION_S
+        public static final String UNABLE_TO_RETRIEVE_RESPONSE_FROM_MEMBER_S = "Unable to retrieve response from member: %s.";
     }
 
     public static class Info {
@@ -11,5 +12,9 @@ public class Messages {
         public static final String GET_VERSION = "Get version request received.";
         public static final String GETTING_ALL_MEMBERS = "Getting all providers members.";
         public static final String GETTING_ALL_SERVICES = "Getting all member services.";
+        public static final String NO_REMOTE_COMMUNICATION_CONFIGURED = "No remote communication configured.";
+        public static final String RECEIVING_REMOTE_REQUEST_FROM_S = "Received remote request from member: %s.";
+        public static final String SEND_SUCCESSFULLY = "Send operation executed successfully.";
+        public static final String SENDING_REMOTE_REQUEST_FROM_MEMBER_S = "Sending remote request from member: %s.";
     }
 }
