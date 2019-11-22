@@ -1,5 +1,7 @@
 package cloud.fogbow.rcs.core.service;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
+import com.google.gson.Gson;
 
 public class CatalogService {
     
@@ -60,7 +63,14 @@ public class CatalogService {
         }
         return services;
     }
-    
+
+    public String getServiceCatalog(String member, String service) throws FileNotFoundException {
+        String specPath = this.properties.getProperty("ras_json");
+        Gson gson = new Gson();
+        Object obj = gson.fromJson(new FileReader(specPath), Object.class);
+        return gson.toJson(obj);
+    }
+
     @VisibleForTesting
     Service getLocalCatalog() throws FogbowException {
         try {
@@ -127,5 +137,4 @@ public class CatalogService {
     String getLocalMember() {
         return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
-
 }
