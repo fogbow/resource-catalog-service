@@ -17,10 +17,6 @@ public class RemoteFacade {
         }
     }
     
-    public void getMessage(String content) {
-        System.out.println(content);
-    }
-
     public String requestService(String senderId, ServiceType serviceType) {
         // TODO call the requestService in the CatalogService
         return null;
