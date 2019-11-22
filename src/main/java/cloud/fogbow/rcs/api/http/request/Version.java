@@ -3,6 +3,7 @@ package cloud.fogbow.rcs.api.http.request;
 import cloud.fogbow.common.constants.ApiDocumentation;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.ApplicationFacade;
+import cloud.fogbow.rcs.api.http.response.VersionNumber;
 import cloud.fogbow.rcs.constants.Messages;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,11 +27,11 @@ public class Version {
 
     @ApiOperation(value = ApiDocumentation.Version.GET_OPERATION)
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<cloud.fogbow.rcs.api.http.response.Version> getVersion() {
+    public ResponseEntity<VersionNumber> getVersion() {
         try {
             LOGGER.info(Messages.Info.GET_VERSION);
-            String versionNumber = ApplicationFacade.getInstance().getVersionNumber();
-            cloud.fogbow.rcs.api.http.response.Version version = new cloud.fogbow.rcs.api.http.response.Version(versionNumber);
+            String number = ApplicationFacade.getInstance().getVersionNumber();
+            VersionNumber version = new VersionNumber(number);
             return new ResponseEntity<>(version, HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.info(String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage()));
