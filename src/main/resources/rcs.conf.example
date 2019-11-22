@@ -41,3 +41,7 @@ xmpp_timeout=
 # Catalog Members File
 # Required
 members_file_path=
+
+# Cache Validity in minutes
+# Optional
+cache_validity=

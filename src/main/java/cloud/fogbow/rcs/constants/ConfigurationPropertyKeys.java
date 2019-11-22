@@ -6,6 +6,7 @@ public class ConfigurationPropertyKeys {
     public static final String LOCAL_MEMBER_ID_KEY = "provider_id"; // FIXME change this constant to PROVIDER_ID_KEY
     public static final String MEMBERSHIP_SERVICE_URL_KEY = "ms_url";
     public static final String MEMBERSHIP_SERVICE_PORT_KEY = "ms_port";
+    public static final String CACHE_EXPIRATION_TIME_KEY = "cache_validity";
     
     // XMPP configuration
     public static final String XMPP_C2C_PORT_KEY = "xmpp_c2c_port";
