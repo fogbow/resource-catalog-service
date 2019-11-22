@@ -14,6 +14,7 @@ import cloud.fogbow.rcs.core.intercomponent.xmpp.PacketSenderHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.XmppErrorConditionToExceptionTranslator;
 import cloud.fogbow.rcs.core.models.ServiceType;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
 public class RemoteGetServiceRequest {
     
@@ -68,7 +69,9 @@ public class RemoteGetServiceRequest {
         XmppErrorConditionToExceptionTranslator.handleError(response, this.member);
         LOGGER.info(Messages.Info.SEND_SUCCESSFULLY);
         
-        // TODO unmarshal response here and save in cache
+        String memberServiceKey = this.member.concat("-").concat(this.serviceType.getName()); // FIXME migrate this string to a constant.
+        String responseContent = unmarshal(response);
+        CacheServiceHolder.getInstance().set(memberServiceKey, responseContent);
     }
 
     @VisibleForTesting
