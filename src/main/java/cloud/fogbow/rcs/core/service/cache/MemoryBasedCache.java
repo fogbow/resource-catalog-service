@@ -1,6 +1,8 @@
 package cloud.fogbow.rcs.core.service.cache;
 
 import cloud.fogbow.common.exceptions.FogbowException;
+import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
+import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.core.PropertiesHolder;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -8,9 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
-import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 
 public class MemoryBasedCache<T> implements CacheService<T> {
     private final int CACHE_VALIDITY;
