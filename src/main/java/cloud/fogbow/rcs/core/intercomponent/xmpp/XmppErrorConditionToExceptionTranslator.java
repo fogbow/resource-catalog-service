@@ -3,6 +3,8 @@ package cloud.fogbow.rcs.core.intercomponent.xmpp;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.PacketError;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.InstanceNotFoundException;
 import cloud.fogbow.common.exceptions.InvalidParameterException;
@@ -27,7 +29,8 @@ public class XmppErrorConditionToExceptionTranslator {
         }
     }
 
-    private static void throwException(PacketError.Condition condition, String message) throws FogbowException {
+    @VisibleForTesting
+    static void throwException(PacketError.Condition condition, String message) throws FogbowException {
         switch (condition) {
         case forbidden:
             throw new UnauthorizedRequestException(message);
