@@ -10,7 +10,7 @@ public class Messages {
     public static class Info {
         public static final String GET_PUBLIC_KEY = "Get public key received.";
         public static final String GET_VERSION = "Get version request received.";
-        public static final String GETTING_ALL_MEMBERS = "Getting all providers members.";
+        public static final String GETTING_ALL_MEMBERS = "Getting all members.";
         public static final String GETTING_ALL_SERVICES = "Getting all member services.";
         public static final String NO_REMOTE_COMMUNICATION_CONFIGURED = "No remote communication configured.";
         public static final String RECEIVING_REMOTE_REQUEST_FROM_S = "Received remote request from member: %s.";

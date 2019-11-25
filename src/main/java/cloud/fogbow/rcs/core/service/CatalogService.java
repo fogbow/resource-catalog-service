@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.annotations.VisibleForTesting;
 
 import cloud.fogbow.common.constants.HttpMethod;
+import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.UnexpectedException;
 import cloud.fogbow.common.util.HomeDir;
 import cloud.fogbow.common.util.PropertiesUtil;
@@ -24,49 +27,45 @@ import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
 
 public class CatalogService {
+    
+    private static final Logger LOGGER = Logger.getLogger(CatalogService.class);
+    
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "/ms/members";
     public static final String PORT_SEPARATOR = ":";
-
-    private static final String URL_PREFFIX_ADDRESS = "https://";
-    private static final String DOC_ENDPOINT = "/doc";
+    public static final String URL_PREFFIX_ADDRESS = "https://";
+    public static final String DOC_ENDPOINT = "/doc";
+    
     private static final int FIRST_POSITION = 0;
     
     private Properties properties;
 
     public CatalogService() {
-        String confFilePath = HomeDir.getPath() + SystemConstants.RCS_CONF_FILE;
+        String confFilePath = HomeDir.getPath().concat(SystemConstants.RCS_CONF_FILE);
         this.properties = PropertiesUtil.readProperties(confFilePath);
     }
 
-    public List<String> requestMembers() throws UnexpectedException {
+    public List<String> requestMembers() throws FogbowException {
         String endpoint = getServiceEndpoint();
-        Map<String, String> headers = new HashMap<>();
-        Map<String, String> body = new HashMap<>();
-        HttpResponse httpResponse = null;
-        try {
-            httpResponse = HttpRequestClient.doGenericRequest(HttpMethod.GET, endpoint, headers, body);
-            MembershipServiceResponse response = MembershipServiceResponse.fromJson(httpResponse.getContent());
-            return listProviderMembers(response);
-        } catch (Exception e) {
-            String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
-            throw new UnexpectedException(message, e);
-        }
+        HttpResponse content = doRequestMembers(endpoint);
+        MembershipServiceResponse response = getResponseFrom(content); 
+        return listMembersFrom(response);
     }
     
-    public List<Service> getMemberServices(String member) throws UnexpectedException {
+    public List<Service> getMemberServices(String member) throws FogbowException {
         List<Service> services = new ArrayList<>();
         if (member.equals(getLocalMember())) {
             services.add(getLocalCatalog());
+        } else {
+            LOGGER.info("Remote member service not yet implemented");
         }
         return services;
     }
     
     @VisibleForTesting
-    Service getLocalCatalog() throws UnexpectedException {
-        String providerURL = URL_PREFFIX_ADDRESS + getLocalMember();
+    Service getLocalCatalog() throws FogbowException {
         try {
-            InetAddress address = InetAddress.getByName(new URL(providerURL).getHost());
-            return new Service(ServiceType.LOCAL, URL_PREFFIX_ADDRESS + address.getCanonicalHostName() + DOC_ENDPOINT);
+            String localHost = getLocalHostProvider();
+            return new Service(ServiceType.LOCAL, getHostAddress(localHost));
         } catch (Exception e) {
             String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
             throw new UnexpectedException(message, e);
@@ -74,7 +73,17 @@ public class CatalogService {
     }
     
     @VisibleForTesting
-    List<String> listProviderMembers(MembershipServiceResponse response) {
+    String getHostAddress(String host) throws Exception {
+        return URL_PREFFIX_ADDRESS.concat(InetAddress.getByName(host).getCanonicalHostName()).concat(DOC_ENDPOINT);
+    }
+    
+    @VisibleForTesting
+    String getLocalHostProvider() throws Exception {
+        return new URL(URL_PREFFIX_ADDRESS.concat(getLocalMember())).getHost();
+    }
+    
+    @VisibleForTesting
+    List<String> listMembersFrom(MembershipServiceResponse response) {
         List<String> members = new ArrayList<>();
         String localMember = getLocalMember();
         for (String member : response.getMembers()) {
@@ -87,13 +96,31 @@ public class CatalogService {
         }
         return members;
     }
+    
+    @VisibleForTesting
+    MembershipServiceResponse getResponseFrom(HttpResponse httpResponse) {
+        String content = httpResponse.getContent();
+        return MembershipServiceResponse.fromJson(content);
+    }
+    
+    @VisibleForTesting
+    HttpResponse doRequestMembers(String endpoint) throws UnexpectedException {
+        Map<String, String> headers = new HashMap<>();
+        Map<String, String> body = new HashMap<>();
+        try {
+            return HttpRequestClient.doGenericRequest(HttpMethod.GET, endpoint, headers, body);
+        } catch (Exception e) {
+            String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
+            throw new UnexpectedException(message, e);
+        }
+    }
 
     @VisibleForTesting
     String getServiceEndpoint() {
         String msUrl = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
         String msPort = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_PORT_KEY);
 
-        return msUrl + PORT_SEPARATOR + msPort + MEMBERSHIP_SERVICE_ENDPOINT;
+        return msUrl.concat(PORT_SEPARATOR).concat(msPort).concat(MEMBERSHIP_SERVICE_ENDPOINT);
     }
 
     @VisibleForTesting
