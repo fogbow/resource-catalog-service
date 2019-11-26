@@ -98,4 +98,9 @@ public class PacketSenderHolder {
         init();
         return packetSender;
     }
+    
+    // Used in tests only
+    public static void setPacketSender(PacketSender thePacketSender) {
+        packetSender = thePacketSender;
+    }
 }
