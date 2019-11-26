@@ -15,4 +15,4 @@ members_file_path=
 
 # Cache Validity in minutes
 # Optional
-cache_validity=
+cache_expiration=
