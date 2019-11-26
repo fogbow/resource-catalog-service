@@ -9,6 +9,7 @@ import com.google.common.annotations.VisibleForTesting;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.constants.SystemConstants;
+import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.PacketSenderHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
@@ -18,6 +19,7 @@ import cloud.fogbow.rcs.core.models.ServiceType;
 public class RemoteGetServiceRequest {
     
     private static final Logger LOGGER = Logger.getLogger(RemoteGetServiceRequest.class);
+    private static final String FORMAT_MEMBER_SERVICE_KEY = "%s-%s";
     
     private String member;
     private ServiceType serviceType;
@@ -68,7 +70,9 @@ public class RemoteGetServiceRequest {
         XmppErrorConditionToExceptionTranslator.handleError(response, this.member);
         LOGGER.info(Messages.Info.SEND_SUCCESSFULLY);
         
-        // TODO unmarshal response here and save in cache
+        String key = String.format(FORMAT_MEMBER_SERVICE_KEY, this.member, this.serviceType.getName());
+        String content = unmarshal(response);
+        RemoteFacade.getInstance().cacheSave(key, content);
     }
 
     @VisibleForTesting
