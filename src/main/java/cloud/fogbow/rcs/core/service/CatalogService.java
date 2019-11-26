@@ -128,4 +128,14 @@ public class CatalogService {
         return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
 
+    public String requestService(String senderId, ServiceType serviceType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void cacheSave(String key, String content) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
