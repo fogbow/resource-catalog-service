@@ -11,6 +11,7 @@ import org.xmpp.component.ComponentException;
 
 import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.PropertiesHolder;
+import cloud.fogbow.rcs.core.TestUtils;
 
 
 @PrepareForTest({ PacketSenderHolder.class, PropertiesHolder.class })
@@ -51,7 +52,7 @@ public class PacketSenderHolderTest extends BaseUnitTests {
         PacketSenderHolder.init();
 
         // verify
-        PowerMockito.verifyStatic(PacketSenderHolder.class);
+        PowerMockito.verifyStatic(PacketSenderHolder.class, Mockito.times(TestUtils.RUN_ONCE));
         PacketSenderHolder.connectPacketSender();
     }
     
@@ -69,7 +70,7 @@ public class PacketSenderHolderTest extends BaseUnitTests {
         PacketSenderHolder.connectPacketSender();
 
         // verify
-        Mockito.verify(component).connect();
+        Mockito.verify(component, Mockito.times(TestUtils.RUN_ONCE)).connect();
     }
     
     // test case: When calling the connectPacketSender method and an error occurs
@@ -105,19 +106,19 @@ public class PacketSenderHolderTest extends BaseUnitTests {
         XMPPComponent component = PacketSenderHolder.buildXmppComponentManager();
 
         // verify
-        PowerMockito.verifyStatic(PacketSenderHolder.class);
+        PowerMockito.verifyStatic(PacketSenderHolder.class, Mockito.times(TestUtils.RUN_ONCE));
         PacketSenderHolder.getXmppProviderId();
 
-        PowerMockito.verifyStatic(PacketSenderHolder.class);
+        PowerMockito.verifyStatic(PacketSenderHolder.class, Mockito.times(TestUtils.RUN_ONCE));
         PacketSenderHolder.getXmppPassword();
 
-        PowerMockito.verifyStatic(PacketSenderHolder.class);
+        PowerMockito.verifyStatic(PacketSenderHolder.class, Mockito.times(TestUtils.RUN_ONCE));
         PacketSenderHolder.getXmppServerIp();
 
-        PowerMockito.verifyStatic(PacketSenderHolder.class);
+        PowerMockito.verifyStatic(PacketSenderHolder.class, Mockito.times(TestUtils.RUN_ONCE));
         PacketSenderHolder.getXmppServerPort();
 
-        PowerMockito.verifyStatic(PacketSenderHolder.class);
+        PowerMockito.verifyStatic(PacketSenderHolder.class, Mockito.times(TestUtils.RUN_ONCE));
         PacketSenderHolder.getXmppTimeout();
 
         Assert.assertNotNull(component);
@@ -214,7 +215,7 @@ public class PacketSenderHolderTest extends BaseUnitTests {
         PacketSenderHolder.getPacketSender();
 
         // verify
-        PowerMockito.verifyStatic(PacketSenderHolder.class);
+        PowerMockito.verifyStatic(PacketSenderHolder.class, Mockito.times(TestUtils.RUN_ONCE));
         PacketSenderHolder.init();
     }
 
