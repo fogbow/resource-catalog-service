@@ -86,9 +86,9 @@ public class CatalogService {
     public String requestService(String member, ServiceType serviceType) {
         HttpResponse response = null;
         try {
-            String serviceIp = getServiceUrl(serviceType);
-            String servicePort = getServicePort(serviceType);
-            String serviceUrl = String.format(SERVICE_URL_FORMAT, serviceIp, servicePort);
+            String url = getServiceUrl(serviceType);
+            String port = getServicePort(serviceType);
+            String serviceUrl = String.format(SERVICE_URL_FORMAT, url, port);
             response = doGetRequest(serviceUrl);
         } catch (Exception e) {
             LOGGER.error(String.format(Messages.Error.ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S, 
