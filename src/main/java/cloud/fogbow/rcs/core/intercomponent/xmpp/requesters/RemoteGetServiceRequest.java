@@ -9,16 +9,17 @@ import com.google.common.annotations.VisibleForTesting;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.constants.SystemConstants;
+import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.PacketSenderHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.XmppErrorConditionToExceptionTranslator;
 import cloud.fogbow.rcs.core.models.ServiceType;
-import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
 public class RemoteGetServiceRequest {
     
     private static final Logger LOGGER = Logger.getLogger(RemoteGetServiceRequest.class);
+    private static final String FORMAT_MEMBER_SERVICE_KEY = "%s-%s";
     
     private String member;
     private ServiceType serviceType;
@@ -69,9 +70,9 @@ public class RemoteGetServiceRequest {
         XmppErrorConditionToExceptionTranslator.handleError(response, this.member);
         LOGGER.info(Messages.Info.SEND_SUCCESSFULLY);
         
-        String memberServiceKey = this.member.concat("-").concat(this.serviceType.getName()); // FIXME migrate this string to a constant.
-        String responseContent = unmarshal(response);
-        CacheServiceHolder.getInstance().set(memberServiceKey, responseContent);
+        String key = String.format(FORMAT_MEMBER_SERVICE_KEY, this.member, this.serviceType.getName());
+        String content = unmarshal(response);
+        RemoteFacade.getInstance().cacheSave(key, content);
     }
 
     @VisibleForTesting

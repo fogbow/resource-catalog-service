@@ -21,6 +21,7 @@ public class Messages {
 
     public static class Error {
         public static final String ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S = "Error while getting %s from member: %s.";
+        public static final String ERROR_TRYING_TO_SAVE = "Error trying to save data to cache service";
         public static final String NO_PACKET_SENDER = "No packet sender.";
     }
 }

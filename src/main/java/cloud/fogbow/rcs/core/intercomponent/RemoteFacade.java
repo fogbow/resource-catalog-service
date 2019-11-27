@@ -24,5 +24,9 @@ public class RemoteFacade {
     public String requestService(String senderId, ServiceType serviceType) {
         return this.factory.makeCatalogService().requestService(senderId, serviceType);
     }
+
+    public void cacheSave(String key, String content) {
+        this.factory.makeCatalogService().cacheSave(key, content);
+    }
     
 }

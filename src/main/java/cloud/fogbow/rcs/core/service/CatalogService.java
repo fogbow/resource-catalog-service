@@ -96,6 +96,14 @@ public class CatalogService {
         }
         return response.getContent();
     }
+    
+    public void cacheSave(String key, String content) {
+        try {
+            CacheServiceHolder.getInstance().set(key, content);
+        } catch (FogbowException e) {
+            LOGGER.error(Messages.Error.ERROR_TRYING_TO_SAVE, e);
+        }
+    }
 
     @VisibleForTesting
     List<Service> getRemoteCatalogFrom(String member) {
@@ -195,4 +203,5 @@ public class CatalogService {
     String getLocalMember() {
         return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
+
 }
