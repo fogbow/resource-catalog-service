@@ -105,8 +105,6 @@ public class CatalogService {
             throw new NoSuchMemberException(String.format(Messages.Exception.NO_SUCH_MEMBER, member));
         }
 
-
-
         List<Service> services = new ArrayList<>();
         List<ServiceType> serviceTypes = RemoteGetServicesRequest.builder().member(member).build().send();
         for (ServiceType serviceType : serviceTypes) {

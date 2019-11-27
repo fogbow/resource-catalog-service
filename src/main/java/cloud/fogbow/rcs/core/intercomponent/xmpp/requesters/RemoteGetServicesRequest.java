@@ -10,7 +10,6 @@ import cloud.fogbow.rcs.core.intercomponent.xmpp.PacketSenderHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.XmppErrorConditionToExceptionTranslator;
 import cloud.fogbow.rcs.core.models.ServiceType;
-import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;

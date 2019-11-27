@@ -5,11 +5,8 @@ import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
-import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
-import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServicesRequest;
 import cloud.fogbow.rcs.core.models.ServiceType;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.gson.Gson;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.jamppa.component.handler.AbstractQueryHandler;
@@ -31,7 +28,6 @@ public class RemoteGetServicesRequestHandler extends AbstractQueryHandler {
         LOGGER.info(String.format(Messages.Info.RECEIVING_REMOTE_REQUEST_FROM_S, iq.getFrom()));
         IQ response = IQ.createResultIQ(iq);
 
-        String member = unmarshal(iq, IqElement.MEMBER);
         List<ServiceType> services = RemoteFacade.getInstance().getServices();
 
         marshal(response, services);
@@ -44,13 +40,4 @@ public class RemoteGetServicesRequestHandler extends AbstractQueryHandler {
         Element contentElement = queryElement.addElement(IqElement.CONTENT.toString());
         contentElement.setText(GsonHolder.getInstance().toJson(content));
     }
-
-    @VisibleForTesting
-    String unmarshal(IQ iq, IqElement iqElement) {
-        Element queryElement = iq.getElement().element(IqElement.QUERY.toString());
-        Element contentElement = queryElement.element(iqElement.toString());
-        return new Gson().fromJson(contentElement.getText(), String.class);
-    }
-
-
 }
