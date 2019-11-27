@@ -6,7 +6,6 @@ import org.jamppa.component.handler.AbstractQueryHandler;
 import org.xmpp.packet.IQ;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.gson.Gson;
 
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
@@ -47,7 +46,7 @@ public class RemoteGetServiceRequestHandler extends AbstractQueryHandler {
     String unmarshal(IQ iq, IqElement iqElement) {
         Element queryElement = iq.getElement().element(IqElement.QUERY.toString());
         Element contentElement = queryElement.element(iqElement.toString());
-        return new Gson().fromJson(contentElement.getText(), String.class);
+        return contentElement.getText();
     }
 
 }

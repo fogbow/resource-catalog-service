@@ -5,10 +5,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.dom4j.Element;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.xmpp.packet.IQ;
 
+import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
 
@@ -22,8 +27,12 @@ public class TestUtils {
     
     public static final String[] MEMBERS = { "member1", "member2", "member3" }; 
     public static final String BASE_URL = "/";
+    public static final String FAKE_CONTENT_JSON = "{content:\"anything\"}";
     public static final String FAKE_LOCAL_MEMBER_URL = "https://member1.org/doc";
+    public static final String FAKE_MEMBER_SERVICE_KEY = "member1-ms";
+    public static final String FAKE_SENDER_ID = "rcs-member1";
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "http://localhost:8080/ms/members";
+    
     
     public static final int LOCAL_MEMBER_INDEX = 0;
     public static final int RUN_ONCE = 1;
@@ -35,8 +44,39 @@ public class TestUtils {
         return facade;
     }
     
+    public RemoteFacade mockRemoteFacade() {
+        RemoteFacade facade = Mockito.mock(RemoteFacade.class);
+        PowerMockito.mockStatic(RemoteFacade.class);
+        BDDMockito.given(RemoteFacade.getInstance()).willReturn(facade);
+        return facade;
+    }
+    
     public Service createLocalService() {
         return new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
+    }
+    
+    public IQ generateRemoteRequest(String member, String service) {
+        IQ iq = new IQ();
+        iq.setTo(FAKE_SENDER_ID);
+        Element queryElement = iq.getElement().addElement(IqElement.QUERY.toString(),
+                RemoteMethod.REMOTE_GET_SERVICE.toString());
+        
+        Element memberElement = queryElement.addElement(IqElement.MEMBER.toString());
+        memberElement.setText(member);
+        
+        Element serviceElement = queryElement.addElement(IqElement.SERVICE.toString());
+        serviceElement.setText(service);
+        return iq;
+    }
+    
+    public IQ getRemoteResponse() {
+        IQ response = new IQ();
+        Element queryElement = response.getElement().addElement(IqElement.QUERY.toString(),
+                RemoteMethod.REMOTE_GET_SERVICE.toString());
+        
+        Element contentElement = queryElement.addElement(IqElement.CONTENT.toString());
+        contentElement.setText(FAKE_CONTENT_JSON);
+        return response;
     }
     
     public String getLocalServicesListResponseContent() throws IOException {
