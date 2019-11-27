@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.Properties;
 
 public class MemoryBasedCache<T> implements CacheService<T> {
-    private final int CACHE_VALIDITY;
+    private final int CACHE_EXPIRATION;
     private Map<String, CacheEntry> cacheMap;
 
     public MemoryBasedCache() {
         Properties properties = PropertiesHolder.getInstance().getProperties();
-        this.CACHE_VALIDITY = Integer.parseInt(properties.getProperty(ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY,
+        this.CACHE_EXPIRATION = Integer.parseInt(properties.getProperty(ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY,
                 ConfigurationPropertyDefaults.CACHE_EXPIRATION_TIME_DEFAULT));
 
         this.cacheMap = new HashMap<>();
@@ -66,7 +66,7 @@ public class MemoryBasedCache<T> implements CacheService<T> {
 
         private Date getExpirationDate() {
             Date now = new Date();
-            return DateUtils.addMinutes(now, CACHE_VALIDITY);
+            return DateUtils.addMinutes(now, CACHE_EXPIRATION);
         }
 
         public T getData() {
