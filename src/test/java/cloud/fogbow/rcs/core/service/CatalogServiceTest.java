@@ -149,18 +149,18 @@ public class CatalogServiceTest extends BaseUnitTests {
     @Test
     public void testGetResponseFromContent() {
         // set up
-        MembershipServiceResponse response = Mockito.mock(MembershipServiceResponse.class);
+        String json = TestUtils.MEMBERSHIP_SERVICE_RESPONSE_JSON;
+        HttpResponse httpResponse = Mockito.mock(HttpResponse.class);
+        Mockito.when(httpResponse.getContent()).thenReturn(json);
+        
         PowerMockito.mockStatic(MembershipServiceResponse.class);
-        BDDMockito.given(MembershipServiceResponse.fromJson(Mockito.anyString())).willReturn(response);
-
-        HttpResponse content = Mockito.mock(HttpResponse.class);
         
         // exercise
-        this.service.getResponseFrom(content);
+        this.service.getResponseFrom(httpResponse);
 
         // verify
         PowerMockito.verifyStatic(MembershipServiceResponse.class, Mockito.times(TestUtils.RUN_ONCE));
-        MembershipServiceResponse.fromJson(Mockito.anyString());
+        MembershipServiceResponse.fromJson(Mockito.eq(json));
     }
     
     // test case: When invoking the doRequestMembers method, it must verify that the

@@ -16,6 +16,7 @@ import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
+import cloud.fogbow.rcs.core.service.CatalogService;
 
 public class TestUtils {
     
@@ -32,7 +33,9 @@ public class TestUtils {
     public static final String FAKE_MEMBER_SERVICE_KEY = "member1-ms";
     public static final String FAKE_SENDER_ID = "rcs-member1";
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "http://localhost:8080/ms/members";
-    
+    public static final String MEMBERSHIP_SERVICE_RESPONSE_JSON = "{\"members\": [\"member1\",\"member2\",\"member3\"]}";
+    public static final String HANG_ON = "1";
+    public static final String NOT_WAIT = "0";
     
     public static final int LOCAL_MEMBER_INDEX = 0;
     public static final int RUN_ONCE = 1;
@@ -45,9 +48,10 @@ public class TestUtils {
     }
     
     public RemoteFacade mockRemoteFacade() {
-        RemoteFacade facade = Mockito.mock(RemoteFacade.class);
+        RemoteFacade facade = Mockito.spy(RemoteFacade.getInstance());
         PowerMockito.mockStatic(RemoteFacade.class);
         BDDMockito.given(RemoteFacade.getInstance()).willReturn(facade);
+        facade.setCatalogService(new CatalogService());
         return facade;
     }
     

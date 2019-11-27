@@ -1,17 +1,13 @@
 package cloud.fogbow.rcs.core.intercomponent;
 
-import cloud.fogbow.rcs.core.CatalogFactory;
 import cloud.fogbow.rcs.core.models.ServiceType;
+import cloud.fogbow.rcs.core.service.CatalogService;
 
 public class RemoteFacade {
 
     private static RemoteFacade instance;
-    private CatalogFactory factory;
+    private CatalogService catalogService;
     
-    private RemoteFacade() {
-        this.factory = new CatalogFactory();
-    }
-
     public static RemoteFacade getInstance() {
         synchronized (RemoteFacade.class) {
             if (instance == null) {
@@ -22,11 +18,14 @@ public class RemoteFacade {
     }
     
     public String requestService(String senderId, ServiceType serviceType) {
-        return this.factory.makeCatalogService().requestService(senderId, serviceType);
+        return this.catalogService.requestService(senderId, serviceType);
     }
 
     public void cacheSave(String key, String content) {
-        this.factory.makeCatalogService().cacheSave(key, content);
+        this.catalogService.cacheSave(key, content);
     }
-    
+
+    public synchronized void setCatalogService(CatalogService catalogService) {
+        this.catalogService = catalogService;
+    }
 }

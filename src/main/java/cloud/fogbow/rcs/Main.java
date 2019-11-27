@@ -8,7 +8,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import cloud.fogbow.rcs.constants.Messages;
+import cloud.fogbow.rcs.core.ApplicationFacade;
+import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.PacketSenderHolder;
+import cloud.fogbow.rcs.core.service.CatalogService;
 
 @Component
 public class Main implements ApplicationRunner {
@@ -17,6 +20,16 @@ public class Main implements ApplicationRunner {
     
     @Override
     public void run(ApplicationArguments args) {
+        // Instantiating CatalogService
+        CatalogService catalogService = new CatalogService();
+
+        // Instantiating Facades
+        ApplicationFacade applicationFacade = ApplicationFacade.getInstance();
+        applicationFacade.setCatalogService(catalogService);
+
+        RemoteFacade remoteFacade = RemoteFacade.getInstance();
+        remoteFacade.setCatalogService(catalogService);
+
         // Starting PacketSender
         while (true) {
             try {
