@@ -5,6 +5,7 @@ public class Messages {
     public static class Exception {
         public static final String GENERIC_EXCEPTION = "Operation returned error: %s."; // FIXME change this constant to GENERIC_EXCEPTION_S
         public static final String UNABLE_TO_RETRIEVE_RESPONSE_FROM_MEMBER_S = "Unable to retrieve response from member: %s.";
+        public static final String NO_SUCH_MEMBER = "There is no member with id: $s.";
     }
 
     public static class Info {

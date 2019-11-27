@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServicesRequest;
 import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -97,9 +99,16 @@ public class CatalogService {
     }
     
     @VisibleForTesting
-    List<Service> getRemoteCatalogFrom(String member) {
+    List<Service> getRemoteCatalogFrom(String member) throws FogbowException{
+        List<String> members = requestMembers();
+        if(!members.contains(member)) {
+            throw new NoSuchMemberException(String.format(Messages.Exception.NO_SUCH_MEMBER, member));
+        }
+
+
+
         List<Service> services = new ArrayList<>();
-        ServiceType[] serviceTypes = { ServiceType.AS, ServiceType.FNS, ServiceType.MS, ServiceType.RAS };
+        List<ServiceType> serviceTypes = RemoteGetServicesRequest.builder().member(member).build().send();
         for (ServiceType serviceType : serviceTypes) {
             String endpoint = String.format(SERVICE_ENDPOINT_FORMAT, member, serviceType.getName());
             Service service = new Service(serviceType, endpoint);
