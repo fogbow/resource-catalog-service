@@ -11,10 +11,12 @@ import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.XmppErrorConditionToExceptionTranslator;
 import cloud.fogbow.rcs.core.models.ServiceType;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.reflect.TypeToken;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.xmpp.packet.IQ;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class RemoteGetServicesRequest {
@@ -77,8 +79,9 @@ public class RemoteGetServicesRequest {
         Element contentElement = queryElement.element(IqElement.CONTENT.toString());
 
         try {
+            Type type = new TypeToken<List<ServiceType>>() {}.getType();
             return (List<ServiceType>) GsonHolder.getInstance().
-                    fromJson(contentElement.getText(), List.class);
+                    fromJson(contentElement.getText(), type);
         } catch (Exception e) {
             throw new UnexpectedException(e.getMessage());
         }

@@ -50,7 +50,7 @@ public class RemoteFacade {
         for(String serviceProperty : possibleServicesProperties) {
             String propertyValue = PropertiesHolder.getInstance().getProperty(serviceProperty);
             if(propertyValue != null && !propertyValue.trim().isEmpty()) {
-                ServiceType currentServiceType = ServiceType.valueOf(serviceProperty.split(SERVICE_PROPERTY_SEPARATOR)[0]);
+                ServiceType currentServiceType = ServiceType.valueOf(serviceProperty.split(SERVICE_PROPERTY_SEPARATOR)[0].toUpperCase());
                 services.add(currentServiceType);
             }
         }
