@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiParam;
 @CrossOrigin
 @RestController
 @RequestMapping(value = Catalog.ENDPOINT)
-@Api(description = ApiDocumentation.Catalog.API)
+@Api(ApiDocumentation.Catalog.API)
 public class Catalog {
 
     protected static final String ENDPOINT = SystemConstants.SERVICE_BASE_ENDPOINT + "members";
