@@ -83,6 +83,17 @@ public class TestUtils {
         return response;
     }
     
+    public IQ getRemoteResponseHandle(IQ iq) {
+        IQ response = new IQ(IQ.Type.result, iq.getID());
+        response.setFrom(iq.getTo());
+         
+        Element queryElement = response.getElement().addElement(IqElement.QUERY.toString());
+        Element contentElement = queryElement.addElement(IqElement.CONTENT.toString());
+        contentElement.setText(FAKE_CONTENT_JSON);
+         
+        return response;
+    }
+    
     public String getLocalServicesListResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(SERVICES_LIST_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);
@@ -114,4 +125,5 @@ public class TestUtils {
         byte[] bytes = Files.readAllBytes(path);
         return new String(bytes);
     }
+
 }

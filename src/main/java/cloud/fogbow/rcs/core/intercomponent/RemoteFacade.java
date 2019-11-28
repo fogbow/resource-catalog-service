@@ -1,5 +1,6 @@
 package cloud.fogbow.rcs.core.intercomponent;
 
+import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.core.models.ServiceType;
 import cloud.fogbow.rcs.core.service.CatalogService;
 
@@ -17,7 +18,7 @@ public class RemoteFacade {
         }
     }
     
-    public String requestService(String senderId, ServiceType serviceType) {
+    public HttpResponse requestService(String senderId, ServiceType serviceType) {
         return this.catalogService.requestService(senderId, serviceType);
     }
 

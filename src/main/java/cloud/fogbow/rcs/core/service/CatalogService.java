@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -15,13 +14,11 @@ import com.google.common.annotations.VisibleForTesting;
 import cloud.fogbow.common.constants.HttpMethod;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.UnexpectedException;
-import cloud.fogbow.common.util.HomeDir;
-import cloud.fogbow.common.util.PropertiesUtil;
 import cloud.fogbow.common.util.connectivity.HttpRequestClient;
 import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.Messages;
-import cloud.fogbow.rcs.constants.SystemConstants;
+import cloud.fogbow.rcs.core.PropertiesHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
@@ -44,13 +41,6 @@ public class CatalogService {
     private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
     private static final String KEY_SEPARATOR = "-";
     
-    private Properties properties;
-
-    public CatalogService() {
-        String confFilePath = HomeDir.getPath().concat(SystemConstants.RCS_CONF_FILE);
-        this.properties = PropertiesUtil.readProperties(confFilePath);
-    }
-
     public List<String> requestMembers() throws FogbowException {
         String endpoint = getServiceEndpoint();
         HttpResponse content = doGetRequest(endpoint);
@@ -83,7 +73,7 @@ public class CatalogService {
         return CacheServiceHolder.getInstance().get(memberServiceKey);
     }
     
-    public String requestService(String member, ServiceType serviceType) {
+    public HttpResponse requestService(String member, ServiceType serviceType) {
         HttpResponse response = null;
         try {
             String url = getServiceUrl(serviceType);
@@ -94,7 +84,7 @@ public class CatalogService {
             LOGGER.error(String.format(Messages.Error.ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S, 
                     serviceType.name(), member), e);
         }
-        return response.getContent();
+        return response;
     }
     
     public void cacheSave(String key, String content) {
@@ -183,25 +173,25 @@ public class CatalogService {
     
     @VisibleForTesting
     String getServicePort(ServiceType serviceType) {
-        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));
+        return PropertiesHolder.getInstance().getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));
     }
     
     @VisibleForTesting
     String getServiceUrl(ServiceType serviceType) {
-        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_URL_KEY, serviceType.getName()));
+        return PropertiesHolder.getInstance().getProperty(String.format(FORMAT_SERVICE_S_URL_KEY, serviceType.getName()));
     }
 
     @VisibleForTesting
     String getServiceEndpoint() {
-        String msUrl = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
-        String msPort = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_PORT_KEY);
+        String msUrl = PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
+        String msPort = PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_PORT_KEY);
 
         return msUrl.concat(PORT_SEPARATOR).concat(msPort).concat(MEMBERSHIP_SERVICE_ENDPOINT);
     }
 
     @VisibleForTesting
     String getLocalMember() {
-        return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
+        return PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
 
 }
