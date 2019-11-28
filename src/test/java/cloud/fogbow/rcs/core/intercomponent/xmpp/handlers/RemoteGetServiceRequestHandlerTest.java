@@ -23,7 +23,8 @@ public class RemoteGetServiceRequestHandlerTest extends BaseUnitTests {
         this.remoteHandler = Mockito.spy(new RemoteGetServiceRequestHandler());
     }
 
-    // test case: ...
+    // test case: When calling the handle method, it must verify that the call was
+    // successful.
     @Test
     public void testHandle() throws Exception {
         // set up
