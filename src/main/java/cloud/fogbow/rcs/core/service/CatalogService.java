@@ -41,9 +41,10 @@ public class CatalogService {
     
     private static final int FIRST_POSITION = 0;
     private static final String SERVICE_ENDPOINT_FORMAT = "/rcs/service/%s/%s";
-    private static final String SERVICE_URL_FORMAT = "http://%s:%s/v2/api-docs";
-    private static final String FORMAT_SERVICE_S_IP_KEY = "%s_ip";
+    private static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
+    private static final String FORMAT_SERVICE_S_URL_KEY = "%s_url";
     private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
+    private static final String KEY_SEPARATOR = "-";
     
     private Properties properties;
 
@@ -54,7 +55,7 @@ public class CatalogService {
 
     public List<String> requestMembers() throws FogbowException {
         String endpoint = getServiceEndpoint();
-        HttpResponse content = doRequestMembers(endpoint);
+        HttpResponse content = doGetRequest(endpoint);
         MembershipServiceResponse response = getResponseFrom(content); 
         return listMembersFrom(response);
     }
@@ -70,7 +71,7 @@ public class CatalogService {
     }
 
     public String getServiceCatalog(String member, String service) throws FogbowException {
-        String memberServiceKey = member.concat("-").concat(service); // FIXME migrate this string to a constant.
+        String memberServiceKey = member.concat(KEY_SEPARATOR).concat(service);
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
         boolean hasCached = CacheServiceHolder.getInstance().has(memberServiceKey);
         if (!hasCached) {
@@ -87,10 +88,10 @@ public class CatalogService {
     public String requestService(String member, ServiceType serviceType) {
         HttpResponse response = null;
         try {
-            String serviceIp = this.properties.getProperty(String.format(FORMAT_SERVICE_S_IP_KEY, serviceType.getName()));
-            String servicePort = this.properties.getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));;
-            String serviceUrl = String.format(SERVICE_URL_FORMAT, serviceIp, servicePort);
-            response = doRequestMembers(serviceUrl); // FIXME renamed this method to doGetRequestFrom
+            String url = getServiceUrl(serviceType);
+            String port = getServicePort(serviceType);
+            String serviceUrl = String.format(SERVICE_URL_FORMAT, url, port);
+            response = doGetRequest(serviceUrl);
         } catch (Exception e) {
             LOGGER.error(String.format(Messages.Error.ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S, 
                     serviceType.name(), member), e);
@@ -98,6 +99,14 @@ public class CatalogService {
         return response.getContent();
     }
     
+    public void cacheSave(String key, String content) {
+        try {
+            CacheServiceHolder.getInstance().set(key, content);
+        } catch (FogbowException e) {
+            LOGGER.error(Messages.Error.ERROR_TRYING_TO_SAVE, e);
+        }
+    }
+
     @VisibleForTesting
     List<Service> getRemoteCatalogFrom(String member) throws FogbowException{
         List<String> members = requestMembers();
@@ -158,7 +167,7 @@ public class CatalogService {
     }
     
     @VisibleForTesting
-    HttpResponse doRequestMembers(String endpoint) throws UnexpectedException {
+    HttpResponse doGetRequest(String endpoint) throws UnexpectedException {
         Map<String, String> headers = new HashMap<>();
         Map<String, String> body = new HashMap<>();
         try {
@@ -167,6 +176,26 @@ public class CatalogService {
             String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
             throw new UnexpectedException(message, e);
         }
+    }
+    
+    @VisibleForTesting
+    boolean contains(ServiceType serviceType) {
+        String urlValue = getServiceUrl(serviceType);
+        String portValue = getServicePort(serviceType);
+        if ((urlValue != null && !urlValue.isEmpty()) || (portValue != null && !portValue.isEmpty())) {
+            return true;
+        }
+        return false;
+    }
+    
+    @VisibleForTesting
+    String getServicePort(ServiceType serviceType) {
+        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));
+    }
+    
+    @VisibleForTesting
+    String getServiceUrl(ServiceType serviceType) {
+        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_URL_KEY, serviceType.getName()));
     }
 
     @VisibleForTesting
@@ -181,4 +210,5 @@ public class CatalogService {
     String getLocalMember() {
         return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
+
 }

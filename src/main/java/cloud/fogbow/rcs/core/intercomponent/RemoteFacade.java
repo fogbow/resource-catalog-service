@@ -57,5 +57,9 @@ public class RemoteFacade {
 
         return services;
     }
+
+    public void cacheSave(String key, String content) {
+        this.factory.makeCatalogService().cacheSave(key, content);
+    }
     
 }
