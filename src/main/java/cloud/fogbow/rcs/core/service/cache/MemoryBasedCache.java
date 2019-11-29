@@ -1,24 +1,24 @@
 package cloud.fogbow.rcs.core.service.cache;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.time.DateUtils;
+
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.core.PropertiesHolder;
-import org.apache.commons.lang.time.DateUtils;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 public class MemoryBasedCache<T> implements CacheService<T> {
     private final int CACHE_EXPIRATION;
     private Map<String, CacheEntry> cacheMap;
 
     public MemoryBasedCache() {
-        Properties properties = PropertiesHolder.getInstance().getProperties();
-        this.CACHE_EXPIRATION = Integer.parseInt(properties.getProperty(ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY,
-                ConfigurationPropertyDefaults.CACHE_EXPIRATION_TIME_DEFAULT));
+        this.CACHE_EXPIRATION = Integer.parseInt(
+                PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY,
+                        ConfigurationPropertyDefaults.CACHE_EXPIRATION_TIME_DEFAULT));
 
         this.cacheMap = new HashMap<>();
     }
