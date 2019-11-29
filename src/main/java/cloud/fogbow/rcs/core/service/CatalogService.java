@@ -29,17 +29,17 @@ public class CatalogService {
     
     private static final Logger LOGGER = Logger.getLogger(CatalogService.class);
     
+    public static final String DOC_ENDPOINT = "/doc";
+    public static final String KEY_SEPARATOR = "-";
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "/ms/members";
     public static final String PORT_SEPARATOR = ":";
     public static final String URL_PREFFIX_ADDRESS = "https://";
-    public static final String DOC_ENDPOINT = "/doc";
     
     private static final int FIRST_POSITION = 0;
     private static final String SERVICE_ENDPOINT_FORMAT = "/rcs/service/%s/%s";
     private static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
     private static final String FORMAT_SERVICE_S_URL_KEY = "%s_url";
     private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
-    private static final String KEY_SEPARATOR = "-";
     
     public List<String> requestMembers() throws FogbowException {
         String endpoint = getServiceEndpoint();

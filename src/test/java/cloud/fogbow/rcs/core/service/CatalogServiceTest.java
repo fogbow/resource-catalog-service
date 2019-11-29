@@ -22,11 +22,14 @@ import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
+import cloud.fogbow.rcs.core.service.cache.CacheService;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
-@PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class })
+@PrepareForTest({ CacheServiceHolder.class, HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, RemoteGetServiceRequest.class })
 public class CatalogServiceTest extends BaseUnitTests {
 
     private CatalogService service;
@@ -68,7 +71,7 @@ public class CatalogServiceTest extends BaseUnitTests {
     @Test
     public void testGetMemberServicesLocal() throws FogbowException {
         // set up
-        String member = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
+        String member = TestUtils.MEMBERS[TestUtils.REMOTE_MEMBER_INDEX];
         Mockito.doReturn(member).when(this.service).getLocalMember();
 
         Service service = new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
@@ -80,6 +83,130 @@ public class CatalogServiceTest extends BaseUnitTests {
         // verify
         Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getLocalMember();
         Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getLocalCatalog();
+    }
+    
+    // test case: When invoking the getMemberServices method from remote member, it
+    // must verify that the call was successful.
+    @Test
+    public void testGetMemberServicesRemote() throws FogbowException {
+        // set up
+        String remoteMember = TestUtils.MEMBERS[TestUtils.REMOTE_MEMBER_INDEX];
+        String localMember = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
+        Mockito.doReturn(localMember).when(this.service).getLocalMember();
+        
+        List<Service> services = this.testUtils.createServicesList();
+        Mockito.doReturn(services).when(this.service).getRemoteCatalogFrom(Mockito.eq(remoteMember));
+        
+        // exercise
+        this.service.getMemberServices(remoteMember);
+        
+        // verify
+        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getLocalMember();
+        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getRemoteCatalogFrom(Mockito.eq(remoteMember));
+    }
+    
+    // test case: ...
+    @Test
+    public void testGetServiceCatalogWithRemoteCall() throws Exception {
+        // set up
+        String remoteMember = TestUtils.MEMBERS[TestUtils.REMOTE_MEMBER_INDEX];
+        ServiceType serviceType = ServiceType.MS;
+        String key = remoteMember.concat(CatalogService.KEY_SEPARATOR).concat(serviceType.getName());
+        
+        CacheService<String> cacheService = Mockito.spy(CacheServiceHolder.getInstance());
+        PowerMockito.mockStatic(CacheServiceHolder.class);
+        BDDMockito.when(CacheServiceHolder.getInstance()).thenReturn(cacheService);
+        Mockito.doReturn(false).when(cacheService).has(Mockito.eq(key));
+        
+        RemoteGetServiceRequest request = Mockito.mock(RemoteGetServiceRequest.class);
+        RemoteGetServiceRequest.Builder requestBuilder = Mockito.mock(RemoteGetServiceRequest.Builder.class);
+        Mockito.when(requestBuilder.member(Mockito.eq(remoteMember))).thenReturn(requestBuilder);
+        Mockito.when(requestBuilder.serviceType(Mockito.eq(serviceType))).thenReturn(requestBuilder);
+        Mockito.when(requestBuilder.build()).thenReturn(request);
+        PowerMockito.mockStatic(RemoteGetServiceRequest.class);
+        BDDMockito.given(RemoteGetServiceRequest.builder()).willReturn(requestBuilder);
+        
+        Mockito.doReturn(TestUtils.FAKE_CONTENT_JSON).when(cacheService).get(Mockito.eq(key));
+
+        // exercise
+        this.service.getServiceCatalog(remoteMember, serviceType.getName());
+
+        // verify
+        Mockito.verify(cacheService, Mockito.times(TestUtils.RUN_ONCE)).has(Mockito.eq(key));
+        Mockito.verify(request, Mockito.times(TestUtils.RUN_ONCE)).send();
+        Mockito.verify(cacheService, Mockito.times(TestUtils.RUN_ONCE)).get(Mockito.eq(key));
+    }
+    
+    // test case: ...
+    @Test
+    public void testGetServiceCatalogWithoutRemoteCall() throws FogbowException {
+        // set up
+        String member = null;
+        String service = null;
+
+        // exercise
+        this.service.getServiceCatalog(member, service);
+
+        // verify
+        // CacheServiceHolder.getInstance().get(memberServiceKey);
+    }
+    
+    // test case: ...
+    @Test
+    public void testRequestService() {
+        // set up
+        String member = null;
+        ServiceType serviceType = null;
+
+        // exercise
+        this.service.requestService(member, serviceType);
+
+        // verify
+        // getServiceUrl(serviceType);
+        // getServicePort(serviceType);
+        // doGetRequest(serviceUrl);
+    }
+    
+    // test case: ...
+    @Test
+    public void testRequestServiceFail() {
+        // set up
+        String member = null;
+        ServiceType serviceType = null;
+
+        // exercise
+        this.service.requestService(member, serviceType);
+
+        // verify
+        // null or UnexpectedException
+    }
+    
+    // test case: ...
+    @Test
+    public void testCacheSave() {
+        // set up
+        String content = null;
+        String key = null;
+
+        // exercise
+        this.service.cacheSave(key, content);
+
+        // verify
+        // CacheServiceHolder.getInstance().set(key, content);
+    }
+    
+    // test case: ...
+    @Test
+    public void testCacheSaveFail() {
+        // set up
+        String content = null;
+        String key = null;
+
+        // exercise
+        this.service.cacheSave(key, content);
+
+        // verify
+        // CacheServiceHolder.getInstance().set(key, content);
     }
     
     // test case: When invoking the getLocalCatalog method, it must verify that the
@@ -206,6 +333,32 @@ public class CatalogServiceTest extends BaseUnitTests {
             // verify
             Assert.assertEquals(expected, e.getMessage());
         }
+    }
+    
+    // test case: ...
+    @Test
+    public void testGetServicePort() {
+        // set up
+        ServiceType serviceType = null;
+
+        // exercise
+        this.service.getServicePort(serviceType);
+
+        // verify
+
+    }
+    
+    // test case: ...
+    @Test
+    public void testGetServiceUrl() {
+        // set up
+        ServiceType serviceType = null;
+
+        // exercise
+        this.service.getServiceUrl(serviceType);
+
+        // verify
+
     }
     
     // test case: When invoking the getServiceEndpoint method, it must verify that the expected endpoint has been returned.

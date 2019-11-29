@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import org.dom4j.Element;
 import org.mockito.BDDMockito;
@@ -31,6 +33,7 @@ public class TestUtils {
     public static final String FAKE_CONTENT_JSON = "{content:\"anything\"}";
     public static final String FAKE_LOCAL_MEMBER_URL = "https://member1.org/doc";
     public static final String FAKE_MEMBER_SERVICE_KEY = "member1-ms";
+    public static final String FAKE_REMOTE_MEMBER_URL = "https://member2.org/doc";
     public static final String FAKE_SENDER_ID = "rcs-member1";
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "http://localhost:8080/ms/members";
     public static final String MEMBERSHIP_SERVICE_RESPONSE_JSON = "{\"members\": [\"member1\",\"member2\",\"member3\"]}";
@@ -38,6 +41,7 @@ public class TestUtils {
     public static final String NOT_WAIT = "0";
     
     public static final int LOCAL_MEMBER_INDEX = 0;
+    public static final int REMOTE_MEMBER_INDEX = 1;
     public static final int RUN_ONCE = 1;
 
     public ApplicationFacade mockApplicationFacade() {
@@ -57,6 +61,17 @@ public class TestUtils {
     
     public Service createLocalService() {
         return new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
+    }
+    
+    public List<Service> createServicesList() {
+        Service[] arrayService = { 
+                new Service(ServiceType.AS, TestUtils.FAKE_REMOTE_MEMBER_URL),
+                new Service(ServiceType.FNS, TestUtils.FAKE_REMOTE_MEMBER_URL),
+                new Service(ServiceType.MS, TestUtils.FAKE_REMOTE_MEMBER_URL),
+                new Service(ServiceType.RAS, TestUtils.FAKE_REMOTE_MEMBER_URL)
+        };
+        List<Service> services = Arrays.asList(arrayService);
+        return services;
     }
     
     public IQ generateRemoteRequest(String member, String service) {
