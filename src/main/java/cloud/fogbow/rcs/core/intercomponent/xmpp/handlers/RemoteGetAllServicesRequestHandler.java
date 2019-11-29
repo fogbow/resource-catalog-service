@@ -14,12 +14,12 @@ import org.xmpp.packet.IQ;
 
 import java.util.List;
 
-public class RemoteGetServicesRequestHandler extends AbstractQueryHandler {
+public class RemoteGetAllServicesRequestHandler extends AbstractQueryHandler {
 
     private static final Logger LOGGER = Logger.getLogger(RemoteGetServiceRequestHandler.class);
-    private static final String REMOTE_GET_SERVICES = RemoteMethod.REMOTE_GET_SERVICES.toString();
+    private static final String REMOTE_GET_SERVICES = RemoteMethod.REMOTE_GET_ALL_SERVICES.toString();
 
-    public RemoteGetServicesRequestHandler() {
+    public RemoteGetAllServicesRequestHandler() {
         super(REMOTE_GET_SERVICES);
     }
 

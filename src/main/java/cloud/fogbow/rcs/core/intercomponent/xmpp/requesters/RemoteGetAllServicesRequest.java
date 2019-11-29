@@ -19,30 +19,30 @@ import org.xmpp.packet.IQ;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class RemoteGetServicesRequest {
+public class RemoteGetAllServicesRequest {
 
-    private static final Logger LOGGER = Logger.getLogger(RemoteGetServicesRequest.class);
+    private static final Logger LOGGER = Logger.getLogger(RemoteGetAllServicesRequest.class);
 
     private String member;
 
-    public static RemoteGetServicesRequest.Builder builder() {
-        return new RemoteGetServicesRequest.Builder();
+    public static RemoteGetAllServicesRequest.Builder builder() {
+        return new RemoteGetAllServicesRequest.Builder();
     }
 
     public static class Builder {
         private String member;
 
-        public RemoteGetServicesRequest.Builder member(String member) {
+        public RemoteGetAllServicesRequest.Builder member(String member) {
             this.member = member;
             return this;
         }
 
-        public RemoteGetServicesRequest build() {
-            return new RemoteGetServicesRequest(this);
+        public RemoteGetAllServicesRequest build() {
+            return new RemoteGetAllServicesRequest(this);
         }
     }
 
-    public RemoteGetServicesRequest(RemoteGetServicesRequest.Builder builder) {
+    public RemoteGetAllServicesRequest(RemoteGetAllServicesRequest.Builder builder) {
         this.member = builder.member;
     }
 
@@ -65,7 +65,7 @@ public class RemoteGetServicesRequest {
         iq.setTo(senderId);
 
         Element queryElement = iq.getElement().addElement(IqElement.QUERY.toString(),
-                RemoteMethod.REMOTE_GET_SERVICES.toString());
+                RemoteMethod.REMOTE_GET_ALL_SERVICES.toString());
 
         Element memberElement = queryElement.addElement(IqElement.MEMBER.toString());
         memberElement.setText(this.member);
