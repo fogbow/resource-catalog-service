@@ -11,4 +11,7 @@ public class SystemConstants {
 
     // SERIALIZE NAMES FOR GSON ANNOTATION
     public static final String MEMBERS_KEY_JSON = "members";
+
+    // SERVICE XMPP NAME
+    public static final String XMPP_SERVER_NAME_PREFIX = "rcs-";
 }
