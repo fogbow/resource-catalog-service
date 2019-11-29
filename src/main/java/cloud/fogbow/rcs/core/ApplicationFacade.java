@@ -1,12 +1,13 @@
 package cloud.fogbow.rcs.core;
 
-import java.util.List;
-
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.Service;
+import cloud.fogbow.rcs.core.service.CatalogService;
+
+import java.util.List;
 
 public class ApplicationFacade {
     
@@ -42,5 +43,8 @@ public class ApplicationFacade {
     public String getVersionNumber() {
         return SystemConstants.API_VERSION_NUMBER.concat(SEPARATOR).concat(this.buildNumber);
     }
-    
+
+    public String getService(String member, String service) {
+        return new CatalogService().getServiceCatalog(member, service);
+    }
 }

@@ -60,7 +60,11 @@ public class CatalogService {
         }
         return services;
     }
-    
+
+    public String getServiceCatalog(String member, String service) {
+        return null;
+    }
+
     @VisibleForTesting
     Service getLocalCatalog() throws FogbowException {
         try {
