@@ -26,6 +26,8 @@ public class ApiDocumentation {
         public static final String API = "Provides a service catalog of the federation members";
         public static final String GET_ALL_MEMBERS_OPERATION = "Return a list of members.";
         public static final String GET_ALL_SERVICES_BY_MEMBER_OPERATION = "List a catalog of services available by member.";
+        public static final String GET_SERVICE_OPERATION = "Return the specified service catalog page for a given member.";
         public static final String MEMBER = "The provider member of the federation.";
+        public static final String SERVICE = "The Fogbow service the catalog refers to.";
     }
 }
