@@ -203,5 +203,4 @@ public class CatalogService {
     String getLocalMember() {
         return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
-
 }
