@@ -162,16 +162,6 @@ public class CatalogService {
     }
     
     @VisibleForTesting
-    boolean contains(ServiceType serviceType) {
-        String urlValue = getServiceUrl(serviceType);
-        String portValue = getServicePort(serviceType);
-        if ((urlValue != null && !urlValue.isEmpty()) || (portValue != null && !portValue.isEmpty())) {
-            return true;
-        }
-        return false;
-    }
-    
-    @VisibleForTesting
     String getServicePort(ServiceType serviceType) {
         return PropertiesHolder.getInstance().getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));
     }
