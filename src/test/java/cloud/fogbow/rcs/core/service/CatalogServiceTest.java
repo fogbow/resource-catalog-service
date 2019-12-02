@@ -152,8 +152,8 @@ public class CatalogServiceTest extends BaseUnitTests {
         MembershipServiceResponse response = Mockito.mock(MembershipServiceResponse.class);
         PowerMockito.mockStatic(MembershipServiceResponse.class);
         BDDMockito.given(MembershipServiceResponse.fromJson(Mockito.anyString())).willReturn(response);
-
         HttpResponse content = Mockito.mock(HttpResponse.class);
+        Mockito.when(content.getContent()).thenReturn(Mockito.anyString());
         
         // exercise
         this.service.getResponseFrom(content);

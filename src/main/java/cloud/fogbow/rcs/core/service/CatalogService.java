@@ -240,5 +240,4 @@ public class CatalogService {
 
         return services;
     }
-
 }
