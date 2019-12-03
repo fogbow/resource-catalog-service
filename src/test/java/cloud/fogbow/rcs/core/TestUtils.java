@@ -21,11 +21,14 @@ public class TestUtils {
     
     private static final String EMPTY_STRING = "";
     private static final String MEMBERS_LIST_JSON_FILE_NAME = "membersList.json";
+    private static final String SWAGGER_API_JSON_FILE_NAME = "sampleSwaggerApi.json";
+    private static final String CATALOG_HTML_FILE_NAME = "catalog.html";
     private static final String RESOURCES_API_HTTP_RESPONSE_PATH = "cloud/fogbow/rcs/api/http/response/";
     private static final String SERVICES_LIST_JSON_FILE_NAME = "localServicesList.json";
     private static final String VERSION_NUMBER_JSON_FILE_NAME = "versionNumber.json";
     
-    public static final String[] MEMBERS = { "member1", "member2", "member3" }; 
+    public static final String[] MEMBERS = { "member1", "member2", "member3" };
+    public static final String[] SERVICES = { "ras", "as", "fns" };
     public static final String BASE_URL = "/";
     public static final String FAKE_CONTENT_JSON = "{content:\"anything\"}";
     public static final String FAKE_LOCAL_MEMBER_URL = "https://member1.org/doc";
@@ -53,6 +56,11 @@ public class TestUtils {
     
     public Service createLocalService() {
         return new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
+    }
+
+    public String getCatalogSpec() throws IOException {
+        String jsonFilePath = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(SWAGGER_API_JSON_FILE_NAME));
+        return readFileAsString(jsonFilePath);
     }
     
     public IQ generateRemoteRequest(String member, String service) {
@@ -90,7 +98,16 @@ public class TestUtils {
         String rawJson = readFileAsString(pathFile);
         return String.format(rawJson, MEMBERS);
     }
-    
+
+    public String getServiceResponseContent() throws IOException {
+        String htmlFilePath = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(CATALOG_HTML_FILE_NAME));
+
+        String rawJson = getCatalogSpec();
+        String rawHtml = readFileAsString(htmlFilePath);
+
+        return String.format(rawHtml, rawJson);
+    }
+
     public String getVersionNumberResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(VERSION_NUMBER_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);

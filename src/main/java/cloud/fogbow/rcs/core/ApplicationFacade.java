@@ -7,6 +7,7 @@ import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.Service;
+import com.google.common.annotations.VisibleForTesting;
 
 public class ApplicationFacade {
     
@@ -45,5 +46,10 @@ public class ApplicationFacade {
 
     public String getService(String member, String service) throws FogbowException {
         return this.factory.makeCatalogService().getServiceCatalog(member, service);
+    }
+
+    @VisibleForTesting
+    protected void setCatalogFactory(CatalogFactory catalogFactory) {
+        this.factory = catalogFactory;
     }
 }

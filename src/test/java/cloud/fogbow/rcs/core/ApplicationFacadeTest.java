@@ -1,8 +1,10 @@
 package cloud.fogbow.rcs.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cloud.fogbow.rcs.core.service.CatalogService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -48,6 +50,29 @@ public class ApplicationFacadeTest extends BaseUnitTests {
 
         // verify
         Mockito.verify(this.facade, Mockito.times(TestUtils.RUN_ONCE)).getServicesFrom(Mockito.eq(member));
+    }
+
+    @Test
+    public void testGetService() throws FogbowException, IOException {
+        // set up
+        CatalogFactory factory = Mockito.mock(CatalogFactory.class);
+        CatalogService service = Mockito.mock(CatalogService.class);
+        String fakeSpec = this.testUtils.getCatalogSpec();
+        String fakeMember = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
+        String fakeService = TestUtils.SERVICES[TestUtils.LOCAL_MEMBER_INDEX];
+
+        Mockito.when(factory.makeCatalogService()).thenReturn(service);
+        Mockito.when(service.getServiceCatalog(Mockito.anyString(), Mockito.anyString())).thenReturn(fakeSpec);
+
+        this.facade.setCatalogFactory(factory);
+
+        // exercise
+        this.facade.getService(fakeMember, fakeService);
+
+        // verify
+        Mockito.verify(factory, Mockito.times(TestUtils.RUN_ONCE)).makeCatalogService();
+        Mockito.verify(service, Mockito.times(TestUtils.RUN_ONCE)).getServiceCatalog(Mockito.eq(fakeMember), Mockito.eq(fakeService));
+        Mockito.verify(this.facade, Mockito.times(TestUtils.RUN_ONCE)).getService(Mockito.eq(fakeMember), Mockito.eq(fakeService));
     }
     
     // test case: When invoking the getVersionNumber method, it must verify that the
