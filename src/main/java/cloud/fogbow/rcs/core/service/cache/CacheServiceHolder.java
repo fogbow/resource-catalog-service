@@ -5,7 +5,7 @@ public class CacheServiceHolder {
 
     public static CacheService<String> getInstance() {
         if (cacheService == null) {
-            cacheService = new MemoryBasedCache();
+            cacheService = new MemoryBasedCache<String>();
         }
         return cacheService;
     }

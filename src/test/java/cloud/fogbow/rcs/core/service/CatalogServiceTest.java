@@ -45,7 +45,7 @@ public class CatalogServiceTest extends BaseUnitTests {
         Mockito.doReturn(endpoint).when(this.service).getServiceEndpoint();
 
         HttpResponse content = Mockito.mock(HttpResponse.class);
-        Mockito.doReturn(content).when(this.service).doRequestMembers(Mockito.eq(endpoint));
+        Mockito.doReturn(content).when(this.service).doGetRequest(Mockito.eq(endpoint));
 
         MembershipServiceResponse response = Mockito.mock(MembershipServiceResponse.class);
         Mockito.doReturn(response).when(this.service).getResponseFrom(Mockito.eq(content));
@@ -58,7 +58,7 @@ public class CatalogServiceTest extends BaseUnitTests {
 
         // verify
         Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getServiceEndpoint();
-        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).doRequestMembers(Mockito.eq(endpoint));
+        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).doGetRequest(Mockito.eq(endpoint));
         Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getResponseFrom(Mockito.eq(content));
         Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).listMembersFrom(response);
     }
@@ -152,8 +152,8 @@ public class CatalogServiceTest extends BaseUnitTests {
         MembershipServiceResponse response = Mockito.mock(MembershipServiceResponse.class);
         PowerMockito.mockStatic(MembershipServiceResponse.class);
         BDDMockito.given(MembershipServiceResponse.fromJson(Mockito.anyString())).willReturn(response);
-
         HttpResponse content = Mockito.mock(HttpResponse.class);
+        Mockito.when(content.getContent()).thenReturn(Mockito.anyString());
         
         // exercise
         this.service.getResponseFrom(content);
@@ -176,7 +176,7 @@ public class CatalogServiceTest extends BaseUnitTests {
                 Mockito.any(), Mockito.any())).willReturn(httpResponse);
 
         // exercise
-        this.service.doRequestMembers(endpoint);
+        this.service.doGetRequest(endpoint);
 
         // verify
         PowerMockito.verifyStatic(HttpRequestClient.class, Mockito.times(TestUtils.RUN_ONCE));

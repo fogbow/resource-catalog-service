@@ -5,6 +5,7 @@ public class Messages {
     public static class Exception {
         public static final String GENERIC_EXCEPTION = "Operation returned error: %s."; // FIXME change this constant to GENERIC_EXCEPTION_S
         public static final String UNABLE_TO_RETRIEVE_RESPONSE_FROM_MEMBER_S = "Unable to retrieve response from member: %s.";
+        public static final String NO_SUCH_MEMBER = "There is no member with id: %s.";
     }
 
     public static class Info {
@@ -20,6 +21,8 @@ public class Messages {
     }
 
     public static class Error {
+        public static final String ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S = "Error while getting %s from member: %s.";
+        public static final String ERROR_TRYING_TO_SAVE = "Error trying to save data to cache service";
         public static final String NO_PACKET_SENDER = "No packet sender.";
     }
 }

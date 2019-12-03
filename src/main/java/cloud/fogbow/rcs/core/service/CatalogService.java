@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import cloud.fogbow.rcs.core.PropertiesHolder;
+import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -22,9 +25,11 @@ import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.constants.SystemConstants;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
 public class CatalogService {
     
@@ -36,6 +41,17 @@ public class CatalogService {
     public static final String DOC_ENDPOINT = "/doc";
     
     private static final int FIRST_POSITION = 0;
+    private static final String SERVICE_ENDPOINT_FORMAT = "/rcs/service/%s/%s";
+    private static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
+    private static final String FORMAT_SERVICE_S_URL_KEY = "%s_url";
+    private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
+    private static final String KEY_SEPARATOR = "-";
+
+    private final String SERVICE_PROPERTY_SEPARATOR = "_";
+    private final String FNS_SERVICE_PROPERTY = "fns_url";
+    private final String RAS_SERVICE_PROPERTY = "ras_url";
+    private final String MS_SERVICE_PROPERTY = "ms_url";
+    private final String AS_SERVICE_PROPERTY = "as_url";
     
     private Properties properties;
 
@@ -46,7 +62,7 @@ public class CatalogService {
 
     public List<String> requestMembers() throws FogbowException {
         String endpoint = getServiceEndpoint();
-        HttpResponse content = doRequestMembers(endpoint);
+        HttpResponse content = doGetRequest(endpoint);
         MembershipServiceResponse response = getResponseFrom(content); 
         return listMembersFrom(response);
     }
@@ -56,13 +72,63 @@ public class CatalogService {
         if (member.equals(getLocalMember())) {
             services.add(getLocalCatalog());
         } else {
-            LOGGER.info("Remote member service not yet implemented");
+            services.addAll(getRemoteCatalogFrom(member));
         }
         return services;
     }
 
-    public String getServiceCatalog(String member, String service) {
-        return null;
+    public String getServiceCatalog(String member, String service) throws FogbowException {
+        String memberServiceKey = member.concat(KEY_SEPARATOR).concat(service);
+        ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
+        boolean hasCached = CacheServiceHolder.getInstance().has(memberServiceKey);
+        if (!hasCached) {
+            RemoteGetServiceRequest remoteRequest = RemoteGetServiceRequest.builder()
+                    .member(member)
+                    .serviceType(serviceType)
+                    .build();
+            
+            remoteRequest.send();
+        }
+        return CacheServiceHolder.getInstance().get(memberServiceKey);
+    }
+    
+    public String requestService(String member, ServiceType serviceType) {
+        HttpResponse response = null;
+        try {
+            String url = getServiceUrl(serviceType);
+            String port = getServicePort(serviceType);
+            String serviceUrl = String.format(SERVICE_URL_FORMAT, url, port);
+            response = doGetRequest(serviceUrl);
+        } catch (Exception e) {
+            LOGGER.error(String.format(Messages.Error.ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S, 
+                    serviceType.name(), member), e);
+        }
+        return response.getContent();
+    }
+    
+    public void cacheSave(String key, String content) {
+        try {
+            CacheServiceHolder.getInstance().set(key, content);
+        } catch (FogbowException e) {
+            LOGGER.error(Messages.Error.ERROR_TRYING_TO_SAVE, e);
+        }
+    }
+
+    @VisibleForTesting
+    List<Service> getRemoteCatalogFrom(String member) throws FogbowException{
+        List<String> members = requestMembers();
+        if(!members.contains(member)) {
+            throw new NoSuchMemberException(String.format(Messages.Exception.NO_SUCH_MEMBER, member));
+        }
+
+        List<Service> services = new ArrayList<>();
+        List<ServiceType> serviceTypes = RemoteGetAllServicesRequest.builder().member(member).build().send();
+        for (ServiceType serviceType : serviceTypes) {
+            String endpoint = String.format(SERVICE_ENDPOINT_FORMAT, member, serviceType.getName());
+            Service service = new Service(serviceType, endpoint);
+            services.add(service);
+        }
+        return services;
     }
 
     @VisibleForTesting
@@ -108,7 +174,7 @@ public class CatalogService {
     }
     
     @VisibleForTesting
-    HttpResponse doRequestMembers(String endpoint) throws UnexpectedException {
+    HttpResponse doGetRequest(String endpoint) throws UnexpectedException {
         Map<String, String> headers = new HashMap<>();
         Map<String, String> body = new HashMap<>();
         try {
@@ -117,6 +183,26 @@ public class CatalogService {
             String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
             throw new UnexpectedException(message, e);
         }
+    }
+    
+    @VisibleForTesting
+    boolean contains(ServiceType serviceType) {
+        String urlValue = getServiceUrl(serviceType);
+        String portValue = getServicePort(serviceType);
+        if ((urlValue != null && !urlValue.isEmpty()) || (portValue != null && !portValue.isEmpty())) {
+            return true;
+        }
+        return false;
+    }
+    
+    @VisibleForTesting
+    String getServicePort(ServiceType serviceType) {
+        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));
+    }
+    
+    @VisibleForTesting
+    String getServiceUrl(ServiceType serviceType) {
+        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_URL_KEY, serviceType.getName()));
     }
 
     @VisibleForTesting
@@ -132,14 +218,26 @@ public class CatalogService {
         return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
 
-    public String requestService(String senderId, ServiceType serviceType) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public List<ServiceType> getServices() {
+        List<String> possibleServicesProperties = new ArrayList<String>(){
+            {
+                add(FNS_SERVICE_PROPERTY);
+                add(RAS_SERVICE_PROPERTY);
+                add(AS_SERVICE_PROPERTY);
+                add(MS_SERVICE_PROPERTY);
+            }
+        };
 
-    public void cacheSave(String key, String content) {
-        // TODO Auto-generated method stub
-        
-    }
+        List<ServiceType> services = new ArrayList<>();
 
+        for(String serviceProperty : possibleServicesProperties) {
+            String propertyValue = PropertiesHolder.getInstance().getProperty(serviceProperty);
+            if(propertyValue != null && !propertyValue.trim().isEmpty()) {
+                ServiceType currentServiceType = ServiceType.valueOf(serviceProperty.split(SERVICE_PROPERTY_SEPARATOR)[0].toUpperCase());
+                services.add(currentServiceType);
+            }
+        }
+
+        return services;
+    }
 }
