@@ -283,11 +283,14 @@ public class CatalogServiceTest extends BaseUnitTests {
         CacheService cache = Mockito.mock(CacheService.class);
         RemoteGetServiceRequest request = Mockito.mock(RemoteGetServiceRequest.class);
         RemoteGetServiceRequest.Builder builder = Mockito.mock(RemoteGetServiceRequest.Builder.class);
+
         PowerMockito.mockStatic(CacheServiceHolder.class);
         PowerMockito.mockStatic(RemoteGetServiceRequest.class);
 
         Mockito.when(CacheServiceHolder.getInstance()).thenReturn(cache);
         Mockito.when(RemoteGetServiceRequest.builder()).thenReturn(builder);
+        Mockito.doReturn(builder).when(builder).member(Mockito.anyString());
+        Mockito.doReturn(builder).when(builder).serviceType(Mockito.any(ServiceType.class));
         Mockito.doReturn(request).when(builder).build();
         Mockito.doNothing().when(request).send();
         Mockito.when(cache.has(Mockito.anyString())).thenReturn(false);
