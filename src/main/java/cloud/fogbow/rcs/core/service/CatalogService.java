@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
+import cloud.fogbow.rcs.core.PropertiesHolder;
+import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -15,13 +17,11 @@ import com.google.common.annotations.VisibleForTesting;
 import cloud.fogbow.common.constants.HttpMethod;
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.common.exceptions.UnexpectedException;
-import cloud.fogbow.common.util.HomeDir;
-import cloud.fogbow.common.util.PropertiesUtil;
 import cloud.fogbow.common.util.connectivity.HttpRequestClient;
 import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.Messages;
-import cloud.fogbow.rcs.constants.SystemConstants;
+import cloud.fogbow.rcs.core.PropertiesHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
@@ -43,14 +43,13 @@ public class CatalogService {
     private static final String FORMAT_SERVICE_S_URL_KEY = "%s_url";
     private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
     private static final String KEY_SEPARATOR = "-";
+
+    private final String SERVICE_PROPERTY_SEPARATOR = "_";
+    private final String FNS_SERVICE_PROPERTY = "fns_url";
+    private final String RAS_SERVICE_PROPERTY = "ras_url";
+    private final String MS_SERVICE_PROPERTY = "ms_url";
+    private final String AS_SERVICE_PROPERTY = "as_url";
     
-    private Properties properties;
-
-    public CatalogService() {
-        String confFilePath = HomeDir.getPath().concat(SystemConstants.RCS_CONF_FILE);
-        this.properties = PropertiesUtil.readProperties(confFilePath);
-    }
-
     public List<String> requestMembers() throws FogbowException {
         String endpoint = getServiceEndpoint();
         HttpResponse content = doGetRequest(endpoint);
@@ -83,7 +82,7 @@ public class CatalogService {
         return CacheServiceHolder.getInstance().get(memberServiceKey);
     }
     
-    public String requestService(String member, ServiceType serviceType) {
+    public HttpResponse requestService(String member, ServiceType serviceType) {
         HttpResponse response = null;
         try {
             String url = getServiceUrl(serviceType);
@@ -94,7 +93,7 @@ public class CatalogService {
             LOGGER.error(String.format(Messages.Error.ERROR_WHILE_GETTING_SERVICE_S_FROM_MEMBER_S, 
                     serviceType.name(), member), e);
         }
-        return response.getContent();
+        return response;
     }
     
     public void cacheSave(String key, String content) {
@@ -106,9 +105,14 @@ public class CatalogService {
     }
 
     @VisibleForTesting
-    List<Service> getRemoteCatalogFrom(String member) {
+    List<Service> getRemoteCatalogFrom(String member) throws FogbowException{
+        List<String> members = requestMembers();
+        if(!members.contains(member)) {
+            throw new NoSuchMemberException(String.format(Messages.Exception.NO_SUCH_MEMBER, member));
+        }
+
         List<Service> services = new ArrayList<>();
-        ServiceType[] serviceTypes = { ServiceType.AS, ServiceType.FNS, ServiceType.MS, ServiceType.RAS };
+        List<ServiceType> serviceTypes = RemoteGetAllServicesRequest.builder().member(member).build().send();
         for (ServiceType serviceType : serviceTypes) {
             String endpoint = String.format(SERVICE_ENDPOINT_FORMAT, member, serviceType.getName());
             Service service = new Service(serviceType, endpoint);
@@ -172,35 +176,48 @@ public class CatalogService {
     }
     
     @VisibleForTesting
-    boolean contains(ServiceType serviceType) {
-        String urlValue = getServiceUrl(serviceType);
-        String portValue = getServicePort(serviceType);
-        if ((urlValue != null && !urlValue.isEmpty()) || (portValue != null && !portValue.isEmpty())) {
-            return true;
-        }
-        return false;
-    }
-    
-    @VisibleForTesting
     String getServicePort(ServiceType serviceType) {
-        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));
+        return PropertiesHolder.getInstance().getProperty(String.format(FORMAT_SERVICE_S_PORT_KEY, serviceType.getName()));
     }
     
     @VisibleForTesting
     String getServiceUrl(ServiceType serviceType) {
-        return this.properties.getProperty(String.format(FORMAT_SERVICE_S_URL_KEY, serviceType.getName()));
+        return PropertiesHolder.getInstance().getProperty(String.format(FORMAT_SERVICE_S_URL_KEY, serviceType.getName()));
     }
 
     @VisibleForTesting
     String getServiceEndpoint() {
-        String msUrl = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
-        String msPort = this.properties.getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_PORT_KEY);
+        String msUrl = PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_URL_KEY);
+        String msPort = PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.MEMBERSHIP_SERVICE_PORT_KEY);
 
         return msUrl.concat(PORT_SEPARATOR).concat(msPort).concat(MEMBERSHIP_SERVICE_ENDPOINT);
     }
 
     @VisibleForTesting
     String getLocalMember() {
-        return this.properties.getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
+        return PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
+    }
+
+    public List<ServiceType> getServices() {
+        List<String> possibleServicesProperties = new ArrayList<String>(){
+            {
+                add(FNS_SERVICE_PROPERTY);
+                add(RAS_SERVICE_PROPERTY);
+                add(AS_SERVICE_PROPERTY);
+                add(MS_SERVICE_PROPERTY);
+            }
+        };
+
+        List<ServiceType> services = new ArrayList<>();
+
+        for(String serviceProperty : possibleServicesProperties) {
+            String propertyValue = PropertiesHolder.getInstance().getProperty(serviceProperty);
+            if(propertyValue != null && !propertyValue.trim().isEmpty()) {
+                ServiceType currentServiceType = ServiceType.valueOf(serviceProperty.split(SERVICE_PROPERTY_SEPARATOR)[0].toUpperCase());
+                services.add(currentServiceType);
+            }
+        }
+
+        return services;
     }
 }

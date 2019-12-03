@@ -7,6 +7,7 @@ import org.xmpp.packet.IQ;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
@@ -25,19 +26,19 @@ public class RemoteGetServiceRequestHandler extends AbstractQueryHandler {
     @Override
     public IQ handle(IQ iq) {
         LOGGER.info(String.format(Messages.Info.RECEIVING_REMOTE_REQUEST_FROM_S, iq.getFrom()));
-        IQ response = IQ.createResultIQ(iq);
+        IQ iqResponse = getResultiIQ(iq);
         
         String member = unmarshal(iq, IqElement.MEMBER);
         String service = unmarshal(iq, IqElement.SERVICE).toUpperCase();        
-        String content = RemoteFacade.getInstance().requestService(member, ServiceType.valueOf(service));
+        HttpResponse httpResponse = RemoteFacade.getInstance().requestService(member, ServiceType.valueOf(service));
         
-        marshal(response, content);
-        return response;
+        marshal(iqResponse, httpResponse.getContent());
+        return iqResponse;
     }
 
     @VisibleForTesting
-    void marshal(IQ response, String content) {
-        Element queryElement = response.getElement().addElement(IqElement.QUERY.toString());
+    void marshal(IQ iq, String content) {
+        Element queryElement = iq.getElement().addElement(IqElement.QUERY.toString());
         Element contentElement = queryElement.addElement(IqElement.CONTENT.toString());
         contentElement.setText(content);
     }
@@ -47,6 +48,11 @@ public class RemoteGetServiceRequestHandler extends AbstractQueryHandler {
         Element queryElement = iq.getElement().element(IqElement.QUERY.toString());
         Element contentElement = queryElement.element(iqElement.toString());
         return contentElement.getText();
+    }
+    
+    @VisibleForTesting
+    IQ getResultiIQ(IQ iq) {
+        return IQ.createResultIQ(iq);
     }
 
 }

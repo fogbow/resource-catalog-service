@@ -9,15 +9,19 @@ import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
 import cloud.fogbow.rcs.core.models.ServiceType;
+import cloud.fogbow.rcs.core.service.CatalogService;
 
 @PrepareForTest({ RemoteFacade.class })
 public class RemoteFacadeTest extends BaseUnitTests {
 
     private RemoteFacade facade;
+    private CatalogService catalogService;
     
     @Before
     public void setUp() {
-        this.facade = this.testUtils.mockRemoteFacade();
+        this.catalogService = Mockito.mock(CatalogService.class);
+        this.facade = Mockito.spy(RemoteFacade.getInstance());
+        this.facade.setCatalogService(this.catalogService);
     }
     
     // test case: When invoking the requestService method, it must verify that the call
@@ -32,7 +36,7 @@ public class RemoteFacadeTest extends BaseUnitTests {
         this.facade.requestService(senderId, serviceType);
 
         // verify
-        Mockito.verify(this.facade, Mockito.times(TestUtils.RUN_ONCE))
+        Mockito.verify(this.catalogService, Mockito.times(TestUtils.RUN_ONCE))
                 .requestService(Mockito.eq(senderId), Mockito.eq(serviceType));
     }
     
@@ -48,7 +52,7 @@ public class RemoteFacadeTest extends BaseUnitTests {
         this.facade.cacheSave(key, content);
 
         // verify
-        Mockito.verify(this.facade, Mockito.times(TestUtils.RUN_ONCE))
+        Mockito.verify(this.catalogService, Mockito.times(TestUtils.RUN_ONCE))
                 .cacheSave(Mockito.eq(key), Mockito.eq(content));
     }
 
