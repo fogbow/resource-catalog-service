@@ -50,8 +50,7 @@ public class ApplicationFacade {
         return this.buildNumber;
     }
 
-    @VisibleForTesting
-    protected synchronized void setCatalogService(CatalogService catalogService) {
+    public synchronized void setCatalogService(CatalogService catalogService) {
         this.catalogService = catalogService;
     }
 }

@@ -1,10 +1,15 @@
 package cloud.fogbow.rcs.core.service;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
+import cloud.fogbow.rcs.core.service.cache.CacheService;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
+import cloud.fogbow.rcs.core.service.cache.MemoryBasedCache;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +31,10 @@ import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
 
-@PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class })
+import static cloud.fogbow.rcs.core.service.CatalogService.KEY_SEPARATOR;
+
+@PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, CacheServiceHolder.class,
+                  RemoteGetServiceRequest.class})
 public class CatalogServiceTest extends BaseUnitTests {
 
     private CatalogService service;
@@ -238,4 +246,63 @@ public class CatalogServiceTest extends BaseUnitTests {
         Assert.assertEquals(expected, localMember);
     }
 
+    @Test
+    public void testGetServiceCatalog() throws FogbowException, IOException {
+        // set up
+        String member = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
+        String service = ServiceType.MS.getName();
+        String key = member.concat(KEY_SEPARATOR).concat(service);
+        String spec = this.testUtils.getCatalogSpec();
+
+        CacheService cache = Mockito.mock(CacheService.class);
+        PowerMockito.mockStatic(CacheServiceHolder.class);
+
+        Mockito.when(CacheServiceHolder.getInstance()).thenReturn(cache);
+        Mockito.when(cache.has(Mockito.anyString())).thenReturn(true);
+        Mockito.when(cache.get(Mockito.anyString())).thenReturn(spec);
+
+        // exercise
+        this.service.getServiceCatalog(member, service);
+
+        // verify
+        PowerMockito.verifyStatic(CacheServiceHolder.class, Mockito.times(TestUtils.RUN_TWICE));
+        CacheServiceHolder.getInstance();
+
+        Mockito.verify(cache, Mockito.times(TestUtils.RUN_ONCE)).has(Mockito.eq(key));
+        Mockito.verify(cache, Mockito.times(TestUtils.RUN_ONCE)).get(Mockito.eq(key));
+    }
+
+    @Test
+    public void testGetServiceCatalogExpired() throws FogbowException, IOException {
+        // set up
+        String member = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
+        String service = ServiceType.MS.getName();
+        String key = member.concat(KEY_SEPARATOR).concat(service);
+        String spec = this.testUtils.getCatalogSpec();
+
+        CacheService cache = Mockito.mock(CacheService.class);
+        RemoteGetServiceRequest request = Mockito.mock(RemoteGetServiceRequest.class);
+        RemoteGetServiceRequest.Builder builder = Mockito.mock(RemoteGetServiceRequest.Builder.class);
+        PowerMockito.mockStatic(CacheServiceHolder.class);
+        PowerMockito.mockStatic(RemoteGetServiceRequest.class);
+
+        Mockito.when(CacheServiceHolder.getInstance()).thenReturn(cache);
+        Mockito.when(RemoteGetServiceRequest.builder()).thenReturn(builder);
+        Mockito.doReturn(request).when(builder).build();
+        Mockito.doNothing().when(request).send();
+        Mockito.when(cache.has(Mockito.anyString())).thenReturn(false);
+        Mockito.when(cache.get(Mockito.anyString())).thenReturn(spec);
+
+        // exercise
+        this.service.getServiceCatalog(member, service);
+
+        // verify
+        PowerMockito.verifyStatic(CacheServiceHolder.class, Mockito.times(TestUtils.RUN_TWICE));
+        CacheServiceHolder.getInstance();
+
+        Mockito.verify(cache, Mockito.times(TestUtils.RUN_ONCE)).has(Mockito.eq(key));
+        Mockito.verify(cache, Mockito.times(TestUtils.RUN_ONCE)).get(Mockito.eq(key));
+        Mockito.verify(builder, Mockito.times(TestUtils.RUN_ONCE)).build();
+        Mockito.verify(request, Mockito.times(TestUtils.RUN_ONCE)).send();
+    }
 }

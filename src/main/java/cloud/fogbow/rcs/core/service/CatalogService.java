@@ -21,7 +21,6 @@ import cloud.fogbow.common.util.connectivity.HttpRequestClient;
 import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.Messages;
-import cloud.fogbow.rcs.core.PropertiesHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
@@ -42,7 +41,7 @@ public class CatalogService {
     private static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
     private static final String FORMAT_SERVICE_S_URL_KEY = "%s_url";
     private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
-    private static final String KEY_SEPARATOR = "-";
+    protected static final String KEY_SEPARATOR = "-";
 
     private final String SERVICE_PROPERTY_SEPARATOR = "_";
     private final String FNS_SERVICE_PROPERTY = "fns_url";

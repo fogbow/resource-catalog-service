@@ -61,28 +61,20 @@ public class ApplicationFacadeTest extends BaseUnitTests {
     // getServiceCatalog method in CatalogService has been called.
     @Test
     public void testGetService() throws FogbowException, IOException {
+        // set up
         String member = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
         String service = ServiceType.MS.getName();
+        String spec = this.testUtils.getCatalogSpec();
 
-        // set up
-        CatalogFactory factory = Mockito.mock(CatalogFactory.class);
-        CatalogService service = Mockito.mock(CatalogService.class);
-        String fakeSpec = this.testUtils.getCatalogSpec();
-        String fakeMember = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
-        String fakeService = TestUtils.SERVICES[TestUtils.LOCAL_MEMBER_INDEX];
-
-        Mockito.when(factory.makeCatalogService()).thenReturn(service);
-        Mockito.when(service.getServiceCatalog(Mockito.anyString(), Mockito.anyString())).thenReturn(fakeSpec);
-
-        this.facade.setCatalogFactory(factory);
+        CatalogService catalogService = Mockito.mock(CatalogService.class);
+        Mockito.when(catalogService.getServiceCatalog(Mockito.anyString(), Mockito.anyString())).thenReturn(spec);
+        this.facade.setCatalogService(catalogService);
 
         // exercise
-        this.facade.getService(fakeMember, fakeService);
+        this.facade.getService(member, service);
 
         // verify
-        Mockito.verify(factory, Mockito.times(TestUtils.RUN_ONCE)).makeCatalogService();
-        Mockito.verify(service, Mockito.times(TestUtils.RUN_ONCE)).getServiceCatalog(Mockito.eq(fakeMember), Mockito.eq(fakeService));
-        Mockito.verify(this.facade, Mockito.times(TestUtils.RUN_ONCE)).getService(Mockito.eq(fakeMember), Mockito.eq(fakeService));
+        Mockito.verify(this.facade, Mockito.times(TestUtils.RUN_ONCE)).getService(Mockito.eq(member), Mockito.eq(service));
     }
     
     // test case: When calling the getVersionNumber method, it must verify that the
