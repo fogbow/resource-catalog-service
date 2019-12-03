@@ -1,7 +1,11 @@
 package cloud.fogbow.rcs.core.intercomponent;
 
 import cloud.fogbow.rcs.core.CatalogFactory;
+import cloud.fogbow.rcs.core.PropertiesHolder;
 import cloud.fogbow.rcs.core.models.ServiceType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RemoteFacade {
 
@@ -23,6 +27,10 @@ public class RemoteFacade {
     
     public String requestService(String senderId, ServiceType serviceType) {
         return this.factory.makeCatalogService().requestService(senderId, serviceType);
+    }
+
+    public List<ServiceType> getServices() {
+        return this.factory.makeCatalogService().getServices();
     }
 
     public void cacheSave(String key, String content) {
