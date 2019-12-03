@@ -4,6 +4,8 @@ import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.core.models.ServiceType;
 import cloud.fogbow.rcs.core.service.CatalogService;
 
+import java.util.List;
+
 public class RemoteFacade {
 
     private static RemoteFacade instance;
@@ -20,6 +22,10 @@ public class RemoteFacade {
     
     public HttpResponse requestService(String senderId, ServiceType serviceType) {
         return this.catalogService.requestService(senderId, serviceType);
+    }
+
+    public List<ServiceType> getServices() {
+        return this.catalogService.getServices();
     }
 
     public void cacheSave(String key, String content) {

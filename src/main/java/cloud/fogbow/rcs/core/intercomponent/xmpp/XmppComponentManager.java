@@ -1,5 +1,6 @@
 package cloud.fogbow.rcs.core.intercomponent.xmpp;
 
+import cloud.fogbow.rcs.core.intercomponent.xmpp.handlers.RemoteGetAllServicesRequestHandler;
 import org.jamppa.component.XMPPComponent;
 
 import cloud.fogbow.rcs.core.intercomponent.xmpp.handlers.RemoteGetServiceRequestHandler;
@@ -78,6 +79,7 @@ public class XmppComponentManager extends XMPPComponent {
         
         // instantiate get handlers here
         addGetHandler(new RemoteGetServiceRequestHandler());
+        addGetHandler(new RemoteGetAllServicesRequestHandler());
     }
     
 }
