@@ -3,7 +3,6 @@ package cloud.fogbow.rcs.core.intercomponent.xmpp.handlers;
 import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
 import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
-import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
 import cloud.fogbow.rcs.core.models.ServiceType;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +14,6 @@ import org.xmpp.packet.IQ;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 @PrepareForTest({ RemoteFacade.class })
 public class RemoteGetAllServicesRequestHandlerTest extends BaseUnitTests {
