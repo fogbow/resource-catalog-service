@@ -51,4 +51,20 @@ public class Service {
             throw e;
         }
     }
+
+    @ApiOperation(value = ApiDocumentation.Catalog.DELETE_SERVICE_OPERATION)
+    @RequestMapping(value = "/{member:.+}/{service}", method = RequestMethod.DELETE)
+    public void deleteService(
+            @ApiParam(value = ApiDocumentation.Catalog.MEMBER)
+            @PathVariable String member,
+            @ApiParam(value = ApiDocumentation.Catalog.SERVICE)
+            @PathVariable String service) {
+        try {
+            LOGGER.info(String.format(Messages.Info.DELETING_SERVICE));
+            ApplicationFacade.getInstance().removeCache(member, service);
+        } catch (Exception e) {
+            LOGGER.error(String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage()), e);
+            throw e;
+        }
+    }
 }

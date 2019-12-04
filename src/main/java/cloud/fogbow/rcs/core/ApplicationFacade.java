@@ -7,6 +7,7 @@ import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.Service;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
 public class ApplicationFacade {
     
@@ -45,5 +46,10 @@ public class ApplicationFacade {
 
     public String getService(String member, String service) throws FogbowException {
         return this.factory.makeCatalogService().getServiceCatalog(member, service);
+    }
+
+    public void removeCache(String member, String service) {
+        String memberServiceKey = member.concat(SEPARATOR).concat(service);
+        CacheServiceHolder.getInstance().getCacheService().unset(memberServiceKey);
     }
 }

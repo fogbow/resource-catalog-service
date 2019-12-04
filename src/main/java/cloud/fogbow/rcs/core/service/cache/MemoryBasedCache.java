@@ -30,6 +30,11 @@ public class MemoryBasedCache<T> implements CacheService<T> {
     }
 
     @Override
+    public void unset(String key) {
+        this.cacheMap.remove(key);
+    }
+
+    @Override
     public T get(String key) throws FogbowException {
         return this.cacheMap.get(key).getData();
     }
