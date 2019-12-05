@@ -32,7 +32,7 @@ public class RemoteFacade {
         this.catalogService.cacheSave(key, content);
     }
 
-    public synchronized void setCatalogService(CatalogService catalogService) {
+    public void setCatalogService(CatalogService catalogService) {
         this.catalogService = catalogService;
     }
 }
