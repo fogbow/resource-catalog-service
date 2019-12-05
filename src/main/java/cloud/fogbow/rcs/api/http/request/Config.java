@@ -1,5 +1,6 @@
 package cloud.fogbow.rcs.api.http.request;
 
+import cloud.fogbow.rcs.api.http.parameters.ExpirationTimeProperty;
 import cloud.fogbow.rcs.constants.ApiDocumentation;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.constants.SystemConstants;
@@ -18,19 +19,19 @@ import org.springframework.web.bind.annotation.*;
 @Api(ApiDocumentation.Config.API)
 public class Config {
 
-    protected static final String ENDPOINT = SystemConstants.CONFIG_BASE_ENDPOINT;
+    protected static final String ENDPOINT = SystemConstants.SERVICE_BASE_ENDPOINT + SystemConstants.CONFIG_BASE_ENDPOINT;
 
     private static final Logger LOGGER = Logger.getLogger(Config.class);
 
-    @ApiOperation(value = ApiDocumentation.Config.REFRESH_EXPIRATION_TIME)
+    @ApiOperation(value = ApiDocumentation.Config.UPDATE_EXPIRATION_TIME)
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateCacheExpirationTime(
-            @ApiParam(value = ApiDocumentation.Config.)
-            @RequestBody  ExpirationTimePropertie expirationTime,
+            @ApiParam(value = ApiDocumentation.Config.EXPIRATION_TIME)
+            @RequestBody ExpirationTimeProperty expirationTime
     ) throws Exception {
         try {
             LOGGER.info(String.format(Messages.Info.UPDATING_EXPIRATION_TIME));
-            ApplicationFacade.getInstance().updateCacheExpiration(expirationTime.getExpiration());
+            ApplicationFacade.getInstance().updateCacheExpiration(expirationTime.getValue());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.error(String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage()), e);

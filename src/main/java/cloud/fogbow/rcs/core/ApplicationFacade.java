@@ -62,7 +62,7 @@ public class ApplicationFacade {
         BashScriptRunner.Output result = runner.runtimeRun(command);
 
         if(result.getExitCode() != 0) {
-            throw new UnexpectedException("Unable to update propertie");
+            throw new UnexpectedException("Unable to update property");
         }
 
         PropertiesHolder.getInstance().refreshProperties();
