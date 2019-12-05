@@ -11,22 +11,24 @@ import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
+import cloud.fogbow.rcs.core.service.CatalogService;
 import cloud.fogbow.rcs.core.service.cache.MemoryBasedCache;
 
 public class ApplicationFacade {
     
-    private static final String SEPARATOR = "-";
+    public static final String BUILD_NUMBER_FORMAT = "%s-%s";
 
     private static ApplicationFacade instance;
-    private CatalogFactory factory;
+    private CatalogService catalogService;
     private String buildNumber;
 
     private final String UPDATE_PROPERTIES_SCRIPT_PATH = "/bin/update-properties.sh";
     private final String UPDATE_PROPERTIES_SCRIPT_WHOLE_PATH = Paths.get("").toAbsolutePath().toString() + UPDATE_PROPERTIES_SCRIPT_PATH;
 
     private ApplicationFacade() {
-        this.factory = new CatalogFactory();
-        this.buildNumber = PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.BUILD_NUMBER_KEY, ConfigurationPropertyDefaults.BUILD_NUMBER);
+        this.buildNumber = PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.BUILD_NUMBER_KEY,
+                String.format(BUILD_NUMBER_FORMAT, SystemConstants.API_VERSION_NUMBER,
+                        ConfigurationPropertyDefaults.BUILD_NUMBER));
     }
 
     public static ApplicationFacade getInstance() {
@@ -39,20 +41,24 @@ public class ApplicationFacade {
     }
     
     public List<String> getMembers() throws FogbowException {
-        return this.factory.makeCatalogService().requestMembers();
+        return this.catalogService.requestMembers();
     }
     
     public List<Service> getServicesFrom(String member) throws FogbowException {
-        return this.factory.makeCatalogService().getMemberServices(member);
+        return this.catalogService.getMemberServices(member);
+    }
+    
+    public String getService(String member, String service) throws FogbowException {
+        return this.catalogService.getServiceCatalog(member, service);
     }
     
     // version request
     public String getVersionNumber() {
-        return SystemConstants.API_VERSION_NUMBER.concat(SEPARATOR).concat(this.buildNumber);
+        return this.buildNumber;
     }
 
-    public String getService(String member, String service) throws FogbowException {
-        return this.factory.makeCatalogService().getServiceCatalog(member, service);
+    public synchronized void setCatalogService(CatalogService catalogService) {
+        this.catalogService = catalogService;
     }
 
     public void updateCacheExpiration(String newExpiration) throws Exception{

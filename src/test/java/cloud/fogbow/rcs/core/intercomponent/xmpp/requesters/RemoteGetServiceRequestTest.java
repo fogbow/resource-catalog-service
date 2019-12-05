@@ -4,11 +4,12 @@ import org.jamppa.component.PacketSender;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.xmpp.packet.IQ;
 
+import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.core.BaseUnitTests;
+import cloud.fogbow.rcs.core.PropertiesHolder;
 import cloud.fogbow.rcs.core.TestUtils;
 import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.PacketSenderHolder;
@@ -23,10 +24,11 @@ public class RemoteGetServiceRequestTest extends BaseUnitTests {
     @Before
     public void setUp() {
         this.remoteRequest = Mockito.spy(RemoteGetServiceRequest.builder()
-                .member("member1")
+                .member(PropertiesHolder.getInstance()
+                        .getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY))
                 .serviceType(ServiceType.MS)
                 .build());
-        
+
         this.packetSender = Mockito.mock(PacketSender.class);
         PacketSenderHolder.setPacketSender(this.packetSender);
     }
@@ -43,7 +45,7 @@ public class RemoteGetServiceRequestTest extends BaseUnitTests {
         IQ response = this.testUtils.getRemoteResponse();
         Mockito.doReturn(response).when(this.packetSender).syncSendPacket(Mockito.any(IQ.class));
 
-        RemoteFacade facade = Mockito.spy(RemoteFacade.getInstance());
+        RemoteFacade facade = this.testUtils.mockRemoteFacade();
         Mockito.doNothing().when(facade).cacheSave(Mockito.eq(key), Mockito.eq(content));
 
         // exercise
@@ -53,8 +55,7 @@ public class RemoteGetServiceRequestTest extends BaseUnitTests {
         Mockito.verify(this.remoteRequest, Mockito.times(TestUtils.RUN_ONCE)).marshal(Mockito.eq(senderId));
         Mockito.verify(this.remoteRequest, Mockito.times(TestUtils.RUN_ONCE)).unmarshal(Mockito.eq(response));
 
-        PowerMockito.verifyStatic(RemoteFacade.class, Mockito.times(TestUtils.RUN_ONCE));
-        RemoteFacade.getInstance().cacheSave(key, content);
+        Mockito.verify(facade, Mockito.times(TestUtils.RUN_ONCE)).cacheSave(key, content);
     }
 
 }
