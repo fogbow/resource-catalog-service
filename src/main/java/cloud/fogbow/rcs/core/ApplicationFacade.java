@@ -68,6 +68,6 @@ public class ApplicationFacade {
         PropertiesHolder.getInstance().refreshProperties();
 
         int newCacheExpiration = Integer.parseInt(PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY));
-        ((MemoryBasedCache) CacheServiceHolder.getInstance()).setCacheExpiration(newCacheExpiration);
+        ((MemoryBasedCache) CacheServiceHolder.getInstance().getCacheService()).setCacheExpiration(newCacheExpiration);
     }
 }
