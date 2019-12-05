@@ -24,7 +24,7 @@ public class Config {
     private static final Logger LOGGER = Logger.getLogger(Config.class);
 
     @ApiOperation(value = ApiDocumentation.Config.UPDATE_EXPIRATION_TIME)
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(value="/expiration_time", method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateCacheExpirationTime(
             @ApiParam(value = ApiDocumentation.Config.EXPIRATION_TIME)
             @RequestBody ExpirationTimeProperty expirationTime

@@ -6,12 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel
 public class ExpirationTimeProperty {
-    @ApiModelProperty(position = 0, example = ApiDocumentation.Model.EXPIRATION_TIME)
+    @ApiModelProperty(position = 0, example = ApiDocumentation.Model.EXPIRATION_TIME, required = true)
     private String value;
-
-    public ExpirationTimeProperty(String value) {
-        this.value = value;
-    }
 
     public String getValue() {
         return value;
