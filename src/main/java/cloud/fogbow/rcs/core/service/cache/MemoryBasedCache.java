@@ -12,7 +12,7 @@ import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.core.PropertiesHolder;
 
 public class MemoryBasedCache<T> implements CacheService<T> {
-    private final int CACHE_EXPIRATION;
+    private int CACHE_EXPIRATION;
     private Map<String, CacheEntry> cacheMap;
 
     public MemoryBasedCache() {
@@ -48,6 +48,10 @@ public class MemoryBasedCache<T> implements CacheService<T> {
         }
 
         return true;
+    }
+
+    public void setCacheExpiration(int cacheExpiration) {
+        CACHE_EXPIRATION = cacheExpiration;
     }
 
     private class CacheEntry {
