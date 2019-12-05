@@ -24,6 +24,7 @@ public class ApplicationFacade {
 
     private final String UPDATE_PROPERTIES_SCRIPT_PATH = "/bin/update-properties.sh";
     private final String UPDATE_PROPERTIES_SCRIPT_WHOLE_PATH = Paths.get("").toAbsolutePath().toString() + UPDATE_PROPERTIES_SCRIPT_PATH;
+    private final String UNABLE_TO_UPDATE_PROPERTY = "Unable to update property";
 
     private ApplicationFacade() {
         this.buildNumber = PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.BUILD_NUMBER_KEY,
@@ -68,7 +69,7 @@ public class ApplicationFacade {
         BashScriptRunner.Output result = runner.runtimeRun(command);
 
         if(result.getExitCode() != 0) {
-            throw new UnexpectedException("Unable to update property");
+            throw new UnexpectedException(UNABLE_TO_UPDATE_PROPERTY);
         }
 
         PropertiesHolder.getInstance().refreshProperties();
