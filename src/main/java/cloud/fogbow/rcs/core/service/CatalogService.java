@@ -38,7 +38,7 @@ public class CatalogService {
     public static final String DOC_ENDPOINT = "/doc";
     
     private static final int FIRST_POSITION = 0;
-    private static final String SERVICE_ENDPOINT_FORMAT = "/rcs/service/%s/%s";
+    private static final String SERVICE_ENDPOINT_FORMAT = "/rcs/services/%s/%s";
     private static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
     private static final String FORMAT_SERVICE_S_URL_KEY = "%s_url";
     private static final String FORMAT_SERVICE_S_PORT_KEY = "%s_port";
