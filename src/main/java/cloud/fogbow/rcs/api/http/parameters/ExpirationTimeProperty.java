@@ -6,7 +6,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel
 public class ExpirationTimeProperty {
-    @ApiModelProperty(position = 0, example = ApiDocumentation.Model.EXPIRATION_TIME, required = true)
+    private static final int FIRST_ATTR_POSITION = 0;
+
+    @ApiModelProperty(position = FIRST_ATTR_POSITION, example = ApiDocumentation.Model.EXPIRATION_TIME, required = true)
     private String value;
 
     public String getValue() {
