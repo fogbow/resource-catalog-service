@@ -3,7 +3,6 @@ package cloud.fogbow.rcs.core.intercomponent.xmpp.requesters;
 import cloud.fogbow.common.util.GsonHolder;
 import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
-import cloud.fogbow.rcs.core.intercomponent.RemoteFacade;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.IqElement;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.PacketSenderHolder;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.RemoteMethod;

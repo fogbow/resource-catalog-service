@@ -32,6 +32,8 @@ import cloud.fogbow.rcs.core.models.ServiceType;
 @PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, RemoteGetAllServicesRequest.class })
 public class CatalogServiceTest extends BaseUnitTests {
 
+    private static final String BUILDER_METHOD = "builder";
+
     private CatalogService service;
 
     private static final String RAS_LOCATION = "/rcs/service/member1-ms/ras";
@@ -268,7 +270,7 @@ public class CatalogServiceTest extends BaseUnitTests {
 
         RemoteGetAllServicesRequest.Builder requestBuilder = Mockito.spy(RemoteGetAllServicesRequest.builder());
         PowerMockito.mockStatic(RemoteGetAllServicesRequest.class);
-        PowerMockito.doReturn(requestBuilder).when(RemoteGetAllServicesRequest.class, "builder");
+        PowerMockito.doReturn(requestBuilder).when(RemoteGetAllServicesRequest.class, BUILDER_METHOD);
 
         RemoteGetAllServicesRequest request = Mockito.spy(new RemoteGetAllServicesRequest(requestBuilder));
         Mockito.doReturn(request).when(requestBuilder).build();
