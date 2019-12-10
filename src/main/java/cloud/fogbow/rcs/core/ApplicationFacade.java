@@ -13,6 +13,7 @@ import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 public class ApplicationFacade {
     
     public static final String BUILD_NUMBER_FORMAT = "%s-%s";
+    private static final String SEPARATOR = "-";
 
     private static ApplicationFacade instance;
     private CatalogService catalogService;
