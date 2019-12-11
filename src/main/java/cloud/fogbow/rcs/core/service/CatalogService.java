@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cloud.fogbow.rcs.core.PropertiesHolder;
+import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -40,7 +43,13 @@ public class CatalogService {
     public static final String URL_PREFFIX_ADDRESS = "https://";
     
     private static final int FIRST_POSITION = 0;
-    
+
+    private final String SERVICE_PROPERTY_SEPARATOR = "_";
+    private final String FNS_SERVICE_PROPERTY = "fns_url";
+    private final String RAS_SERVICE_PROPERTY = "ras_url";
+    private final String MS_SERVICE_PROPERTY = "ms_url";
+    private final String AS_SERVICE_PROPERTY = "as_url";
+
     public List<String> requestMembers() throws FogbowException {
         String endpoint = getServiceEndpoint();
         HttpResponse content = doGetRequest(endpoint);
@@ -96,9 +105,14 @@ public class CatalogService {
     }
 
     @VisibleForTesting
-    List<Service> getRemoteCatalogFrom(String member) {
+    List<Service> getRemoteCatalogFrom(String member) throws FogbowException{
+        List<String> members = requestMembers();
+        if(!members.contains(member)) {
+            throw new NoSuchMemberException(String.format(Messages.Exception.NO_SUCH_MEMBER, member));
+        }
+
         List<Service> services = new ArrayList<>();
-        ServiceType[] serviceTypes = { ServiceType.AS, ServiceType.FNS, ServiceType.MS, ServiceType.RAS };
+        List<ServiceType> serviceTypes = RemoteGetAllServicesRequest.builder().member(member).build().send();
         for (ServiceType serviceType : serviceTypes) {
             String endpoint = String.format(SERVICE_ENDPOINT_FORMAT, member, serviceType.getName());
             Service service = new Service(serviceType, endpoint);
@@ -184,4 +198,26 @@ public class CatalogService {
         return PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.LOCAL_MEMBER_ID_KEY);
     }
 
+    public List<ServiceType> getServices() {
+        List<String> possibleServicesProperties = new ArrayList<String>(){
+            {
+                add(FNS_SERVICE_PROPERTY);
+                add(RAS_SERVICE_PROPERTY);
+                add(AS_SERVICE_PROPERTY);
+                add(MS_SERVICE_PROPERTY);
+            }
+        };
+
+        List<ServiceType> services = new ArrayList<>();
+
+        for(String serviceProperty : possibleServicesProperties) {
+            String propertyValue = PropertiesHolder.getInstance().getProperty(serviceProperty);
+            if(propertyValue != null && !propertyValue.trim().isEmpty()) {
+                ServiceType currentServiceType = ServiceType.valueOf(serviceProperty.split(SERVICE_PROPERTY_SEPARATOR)[0].toUpperCase());
+                services.add(currentServiceType);
+            }
+        }
+
+        return services;
+    }
 }
