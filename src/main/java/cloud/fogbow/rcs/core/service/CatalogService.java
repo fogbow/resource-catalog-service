@@ -35,7 +35,7 @@ public class CatalogService {
     public static final String KEY_SEPARATOR = "-";
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "/ms/members";
     public static final String PORT_SEPARATOR = ":";
-    public static final String SERVICE_ENDPOINT_FORMAT = "/rcs/service/%s/%s";
+    public static final String SERVICE_ENDPOINT_FORMAT = "/rcs/services/%s/%s";
     public static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
     public static final String URL_PREFFIX_ADDRESS = "https://";
     
