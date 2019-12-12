@@ -20,6 +20,8 @@ public class ApiDocumentation {
                 "        \"location\": \"https://member1.org/doc\"\n" + 
                 "    }\n" + 
                 "]";
+
+        public static final String EXPIRATION_TIME = "10";
     }
 
     public static class Catalog {
@@ -30,5 +32,11 @@ public class ApiDocumentation {
         public static final String MEMBER = "The provider member of the federation.";
         public static final String SERVICE = "The Fogbow service the catalog refers to.";
         public static final String DELETE_SERVICE_OPERATION = "Delete the specified service from the system's cache. It will trigger a refresh when the service get requested again.";
+    }
+
+    public static class Config {
+        public static final String API = "Provides a way to setup the system in runtime";
+        public static final String UPDATE_EXPIRATION_TIME = "Changes the cache's expiration time.";
+        public static final String EXPIRATION_TIME = "The cache's expiration time in minutes";
     }
 }

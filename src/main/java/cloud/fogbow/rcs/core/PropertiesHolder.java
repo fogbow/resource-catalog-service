@@ -34,4 +34,9 @@ public class PropertiesHolder {
         }
         return propertyValue;
     }
+    public void refreshProperties() {
+        String path = HomeDir.getPath();
+        this.properties = PropertiesUtil.readProperties(path + SystemConstants.RCS_CONF_FILE);
+    }
+
 }
