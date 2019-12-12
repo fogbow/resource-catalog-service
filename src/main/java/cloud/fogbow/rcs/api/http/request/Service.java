@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.FileNotFoundException;
-
 @CrossOrigin
 @Controller
 @RequestMapping(value = Service.ENDPOINT)
@@ -38,7 +36,7 @@ public class Service {
             @PathVariable String member,
             @ApiParam(value = ApiDocumentation.Catalog.SERVICE)
             @PathVariable String service,
-            Model model) throws FogbowException, FileNotFoundException {
+            Model model) throws FogbowException {
         try {
             LOGGER.info(String.format(Messages.Info.GETTING_SERVICE));
 

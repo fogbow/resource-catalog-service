@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
+import cloud.fogbow.rcs.core.service.cache.CacheService;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import org.junit.Assert;
@@ -25,14 +28,13 @@ import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
-import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
-import cloud.fogbow.rcs.core.service.cache.CacheService;
-import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
-@PrepareForTest({ CacheServiceHolder.class, HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, RemoteGetServiceRequest.class, RemoteGetAllServicesRequest.class })
+
+@PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, CacheServiceHolder.class,
+                  RemoteGetServiceRequest.class, RemoteGetAllServicesRequest.class})
 public class CatalogServiceTest extends BaseUnitTests {
 
     private static final String BUILDER_METHOD = "builder";
@@ -442,5 +444,4 @@ public class CatalogServiceTest extends BaseUnitTests {
         Mockito.verify(request, Mockito.times(TestUtils.RUN_ONCE)).send();
         Mockito.verify(service, Mockito.times(TestUtils.RUN_ONCE)).requestMembers();
     }
-
 }

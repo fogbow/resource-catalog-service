@@ -7,6 +7,7 @@ import cloud.fogbow.rcs.constants.ConfigurationPropertyDefaults;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.Service;
+import com.google.common.annotations.VisibleForTesting;
 import cloud.fogbow.rcs.core.service.CatalogService;
 
 public class ApplicationFacade {

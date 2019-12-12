@@ -1,5 +1,6 @@
 package cloud.fogbow.rcs.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,17 +60,21 @@ public class ApplicationFacadeTest extends BaseUnitTests {
     // test case: When calling the getService method, it must verify that the
     // getServiceCatalog method in CatalogService has been called.
     @Test
-    public void testGetService() throws FogbowException {
-        // exercise
+    public void testGetService() throws FogbowException, IOException {
+        // set up
         String member = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
         String service = ServiceType.MS.getName();
+        String spec = this.testUtils.getCatalogSpec();
+
+        CatalogService catalogService = Mockito.mock(CatalogService.class);
+        Mockito.when(catalogService.getServiceCatalog(Mockito.anyString(), Mockito.anyString())).thenReturn(spec);
+        this.facade.setCatalogService(catalogService);
 
         // exercise
         this.facade.getService(member, service);
 
         // verify
-        Mockito.verify(this.catalogService, Mockito.times(TestUtils.RUN_ONCE)).getServiceCatalog(Mockito.eq(member),
-                Mockito.eq(service));
+        Mockito.verify(this.facade, Mockito.times(TestUtils.RUN_ONCE)).getService(Mockito.eq(member), Mockito.eq(service));
     }
     
     // test case: When calling the getVersionNumber method, it must verify that the
@@ -86,5 +91,5 @@ public class ApplicationFacadeTest extends BaseUnitTests {
         // verify
         Assert.assertEquals(expected, build);
     }
-    
+
 }
