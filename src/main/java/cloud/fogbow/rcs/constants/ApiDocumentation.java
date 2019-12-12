@@ -31,6 +31,7 @@ public class ApiDocumentation {
         public static final String GET_SERVICE_OPERATION = "Return the specified service catalog page for a given member.";
         public static final String MEMBER = "The provider member of the federation.";
         public static final String SERVICE = "The Fogbow service the catalog refers to.";
+        public static final String DELETE_SERVICE_OPERATION = "Delete the specified service from the system's cache. It will trigger a refresh when the service get requested again.";
     }
 
     public static class Config {

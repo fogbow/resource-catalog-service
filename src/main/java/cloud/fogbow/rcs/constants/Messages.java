@@ -19,6 +19,7 @@ public class Messages {
         public static final String SEND_SUCCESSFULLY = "Send operation executed successfully.";
         public static final String SENDING_REMOTE_REQUEST_FROM_MEMBER_S = "Sending remote request from member: %s.";
         public static final String UPDATING_EXPIRATION_TIME = "Updating the cache's expiration time";
+        public static final String DELETING_SERVICE = "Deleting service.";
     }
 
     public static class Error {

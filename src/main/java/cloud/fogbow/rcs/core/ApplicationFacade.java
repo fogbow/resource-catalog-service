@@ -11,12 +11,14 @@ import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
+import com.google.common.annotations.VisibleForTesting;
 import cloud.fogbow.rcs.core.service.CatalogService;
 import cloud.fogbow.rcs.core.service.cache.MemoryBasedCache;
 
 public class ApplicationFacade {
     
     public static final String BUILD_NUMBER_FORMAT = "%s-%s";
+    private static final String SEPARATOR = "-";
 
     private static ApplicationFacade instance;
     private CatalogService catalogService;
@@ -76,5 +78,10 @@ public class ApplicationFacade {
 
         int newCacheExpiration = Integer.parseInt(PropertiesHolder.getInstance().getProperty(ConfigurationPropertyKeys.CACHE_EXPIRATION_TIME_KEY));
         ((MemoryBasedCache) CacheServiceHolder.getInstance().getCacheService()).setCacheExpiration(newCacheExpiration);
+    }
+    
+    public void removeCache(String member, String service) {
+        String memberServiceKey = member.concat(SEPARATOR).concat(service);
+        CacheServiceHolder.getInstance().getCacheService().unset(memberServiceKey);
     }
 }
