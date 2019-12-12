@@ -34,7 +34,7 @@ import cloud.fogbow.rcs.core.models.ServiceType;
 
 
 @PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, CacheServiceHolder.class,
-                  RemoteGetServiceRequest.class})
+                  RemoteGetServiceRequest.class, RemoteGetAllServicesRequest.class})
 public class CatalogServiceTest extends BaseUnitTests {
 
     private static final String BUILDER_METHOD = "builder";
