@@ -84,9 +84,9 @@ public class TestUtils {
     }
     
     public CacheService<String> spyCacheServiceHolder() {
-        CacheService<String> cacheService = Mockito.spy(CacheServiceHolder.getInstance());
+        CacheService<String> cacheService = Mockito.spy(CacheServiceHolder.getInstance().getCacheService());
         PowerMockito.mockStatic(CacheServiceHolder.class);
-        BDDMockito.when(CacheServiceHolder.getInstance()).thenReturn(cacheService);
+        BDDMockito.when(CacheServiceHolder.getInstance().getCacheService()).thenReturn(cacheService);
         return cacheService;
     }
     
