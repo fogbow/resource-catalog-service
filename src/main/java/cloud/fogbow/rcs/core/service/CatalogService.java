@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cloud.fogbow.rcs.core.PropertiesHolder;
-import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
-import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -21,6 +18,9 @@ import cloud.fogbow.common.util.connectivity.HttpRequestClient;
 import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.ConfigurationPropertyKeys;
 import cloud.fogbow.rcs.constants.Messages;
+import cloud.fogbow.rcs.core.PropertiesHolder;
+import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
@@ -37,7 +37,7 @@ public class CatalogService {
     public static final String KEY_SEPARATOR = "-";
     public static final String MEMBERSHIP_SERVICE_ENDPOINT = "/ms/members";
     public static final String PORT_SEPARATOR = ":";
-    public static final String SERVICE_ENDPOINT_FORMAT = "/rcs/service/%s/%s";
+    public static final String SERVICE_ENDPOINT_FORMAT = "/rcs/services/%s/%s";
     public static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
     public static final String URL_PREFFIX_ADDRESS = "https://";
     

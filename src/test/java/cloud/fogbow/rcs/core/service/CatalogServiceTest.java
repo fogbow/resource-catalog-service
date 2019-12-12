@@ -1,15 +1,16 @@
 package cloud.fogbow.rcs.core.service;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.service.cache.CacheService;
 import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
-import cloud.fogbow.rcs.core.service.cache.MemoryBasedCache;
+import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
+import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,18 +28,21 @@ import cloud.fogbow.common.util.connectivity.HttpResponse;
 import cloud.fogbow.rcs.constants.Messages;
 import cloud.fogbow.rcs.core.BaseUnitTests;
 import cloud.fogbow.rcs.core.TestUtils;
-import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetServiceRequest;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
 
-import static cloud.fogbow.rcs.core.service.CatalogService.KEY_SEPARATOR;
 
 @PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, CacheServiceHolder.class,
                   RemoteGetServiceRequest.class})
 public class CatalogServiceTest extends BaseUnitTests {
 
+    private static final String BUILDER_METHOD = "builder";
+
     private CatalogService service;
+
+    private static final String RAS_LOCATION = "/rcs/services/member1-ms/ras";
+    private static final String AS_LOCATION = "/rcs/services/member1-ms/as";
     
     @Before
     public void setUp() {
@@ -389,5 +393,55 @@ public class CatalogServiceTest extends BaseUnitTests {
 
         // verify
         Assert.assertEquals(expected, localMember);
+    }
+
+    //test case: check if the expected services are returned
+    @Test
+    public void testGetServices() {
+        //exercise
+        List<ServiceType> services = this.service.getServices();
+        //verify
+        Assert.assertEquals(4, services.size());
+    }
+
+    //test case: check if an exception is thrown when an invalid member is passed
+    @Test(expected = NoSuchMemberException.class)//verify
+    public void testGetRemoteCatalogFromInvalidMember() throws FogbowException {
+        //setup
+        Mockito.doReturn(new ArrayList<>()).when(service).requestMembers();
+        //exercise
+        service.getRemoteCatalogFrom(TestUtils.FAKE_MEMBER_SERVICE_KEY);
+    }
+
+    //test case: check if the expected calls are done in the successful case
+    @Test
+    public void testGetRemoteCatalogFrom() throws Exception {
+        //setup
+        List<String> members = new ArrayList<>();
+        members.add(TestUtils.FAKE_MEMBER_SERVICE_KEY);
+        Mockito.doReturn(members).when(service).requestMembers();
+
+        RemoteGetAllServicesRequest.Builder requestBuilder = Mockito.spy(RemoteGetAllServicesRequest.builder());
+        PowerMockito.mockStatic(RemoteGetAllServicesRequest.class);
+        PowerMockito.doReturn(requestBuilder).when(RemoteGetAllServicesRequest.class, BUILDER_METHOD);
+
+        RemoteGetAllServicesRequest request = Mockito.spy(new RemoteGetAllServicesRequest(requestBuilder));
+        Mockito.doReturn(request).when(requestBuilder).build();
+
+        List<ServiceType> servicesTypes = new ArrayList<>();
+        servicesTypes.add(ServiceType.RAS);
+        servicesTypes.add(ServiceType.AS);
+
+        Mockito.doReturn(servicesTypes).when(request).send();
+
+        //exercise
+        List<Service> services = service.getRemoteCatalogFrom(TestUtils.FAKE_MEMBER_SERVICE_KEY);
+        
+        //verify
+        Assert.assertEquals(2, services.size());
+        Assert.assertEquals(RAS_LOCATION, services.get(TestUtils.FIRST_ARRAY_POSITION).getLocation());
+        Assert.assertEquals(AS_LOCATION, services.get(TestUtils.SECOND_ARRAY_POSITION).getLocation());
+        Mockito.verify(request, Mockito.times(TestUtils.RUN_ONCE)).send();
+        Mockito.verify(service, Mockito.times(TestUtils.RUN_ONCE)).requestMembers();
     }
 }
