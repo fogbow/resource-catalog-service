@@ -9,10 +9,12 @@ import cloud.fogbow.rcs.constants.SystemConstants;
 import cloud.fogbow.rcs.core.models.Service;
 import com.google.common.annotations.VisibleForTesting;
 import cloud.fogbow.rcs.core.service.CatalogService;
+import cloud.fogbow.rcs.core.service.cache.CacheServiceHolder;
 
 public class ApplicationFacade {
     
     public static final String BUILD_NUMBER_FORMAT = "%s-%s";
+    private static final String SEPARATOR = "-";
 
     private static ApplicationFacade instance;
     private CatalogService catalogService;
@@ -52,5 +54,10 @@ public class ApplicationFacade {
 
     public synchronized void setCatalogService(CatalogService catalogService) {
         this.catalogService = catalogService;
+    }
+
+    public void removeCache(String member, String service) {
+        String memberServiceKey = member.concat(SEPARATOR).concat(service);
+        CacheServiceHolder.getInstance().getCacheService().unset(memberServiceKey);
     }
 }

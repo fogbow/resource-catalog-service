@@ -69,7 +69,7 @@ public class CatalogService {
     public String getServiceCatalog(String member, String service) throws FogbowException {
         String memberServiceKey = member.concat(KEY_SEPARATOR).concat(service);
         ServiceType serviceType = ServiceType.valueOf(service.toUpperCase());
-        boolean hasCached = CacheServiceHolder.getInstance().has(memberServiceKey);
+        boolean hasCached = CacheServiceHolder.getInstance().getCacheService().has(memberServiceKey);
         if (!hasCached) {
             RemoteGetServiceRequest remoteRequest = RemoteGetServiceRequest.builder()
                     .member(member)
@@ -78,7 +78,7 @@ public class CatalogService {
             
             remoteRequest.send();
         }
-        return CacheServiceHolder.getInstance().get(memberServiceKey);
+        return CacheServiceHolder.getInstance().getCacheService().get(memberServiceKey);
     }
     
     public HttpResponse requestService(String member, ServiceType serviceType) {
@@ -97,7 +97,7 @@ public class CatalogService {
     
     public void cacheSave(String key, String content) {
         try {
-            CacheServiceHolder.getInstance().set(key, content);
+            CacheServiceHolder.getInstance().getCacheService().set(key, content);
         } catch (FogbowException e) {
             LOGGER.error(Messages.Error.ERROR_TRYING_TO_SAVE, e);
         }

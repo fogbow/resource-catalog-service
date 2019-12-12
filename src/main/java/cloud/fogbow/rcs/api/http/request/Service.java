@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,6 +46,23 @@ public class Service {
             model.addAttribute(CATALOG_SPEC_ATTRIBUTE, catalogSpec);
 
             return CATALOG_VIEW;
+        } catch (Exception e) {
+            LOGGER.error(String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage()), e);
+            throw e;
+        }
+    }
+
+    @ApiOperation(value = ApiDocumentation.Catalog.DELETE_SERVICE_OPERATION)
+    @RequestMapping(value = "/{member:.+}/{service}", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteService(
+            @ApiParam(value = ApiDocumentation.Catalog.MEMBER)
+            @PathVariable String member,
+            @ApiParam(value = ApiDocumentation.Catalog.SERVICE)
+            @PathVariable String service) {
+        try {
+            LOGGER.info(String.format(Messages.Info.DELETING_SERVICE));
+            ApplicationFacade.getInstance().removeCache(member, service);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.error(String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage()), e);
             throw e;
