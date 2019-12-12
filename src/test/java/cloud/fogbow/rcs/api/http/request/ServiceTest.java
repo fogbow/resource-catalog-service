@@ -48,4 +48,15 @@ public class ServiceTest extends BaseUnitTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expected));
     }
+
+    //test case: Check if the HttpStatus.OK is returned when a delete request is performed.
+    @Test
+    public void testDeleteService() throws Exception {
+        // set up
+        Mockito.doNothing().when(this.facade).removeCache(Mockito.anyString(), Mockito.anyString());
+        // exercise
+        this.mockMvc.perform(MockMvcRequestBuilders.delete(TestUtils.BASE_URL.concat(Service.ENDPOINT + SERVICE_ENDPOINT)))
+                // verify
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }
