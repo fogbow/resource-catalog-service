@@ -40,6 +40,9 @@ public class TestUtils {
     public static final int LOCAL_MEMBER_INDEX = 0;
     public static final int RUN_ONCE = 1;
 
+    public static final int FIRST_ARRAY_POSITION = 0;
+    public static final int SECOND_ARRAY_POSITION = 1;
+
     public ApplicationFacade mockApplicationFacade() {
         ApplicationFacade facade = Mockito.mock(ApplicationFacade.class);
         PowerMockito.mockStatic(ApplicationFacade.class);
