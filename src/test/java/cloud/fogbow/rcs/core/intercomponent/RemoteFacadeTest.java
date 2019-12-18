@@ -3,7 +3,6 @@ package cloud.fogbow.rcs.core.intercomponent;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import cloud.fogbow.common.exceptions.FogbowException;
 import cloud.fogbow.rcs.core.BaseUnitTests;
@@ -11,7 +10,6 @@ import cloud.fogbow.rcs.core.TestUtils;
 import cloud.fogbow.rcs.core.models.ServiceType;
 import cloud.fogbow.rcs.core.service.CatalogService;
 
-@PrepareForTest({ RemoteFacade.class })
 public class RemoteFacadeTest extends BaseUnitTests {
 
     private RemoteFacade facade;
@@ -38,6 +36,17 @@ public class RemoteFacadeTest extends BaseUnitTests {
         // verify
         Mockito.verify(this.catalogService, Mockito.times(TestUtils.RUN_ONCE))
                 .requestService(Mockito.eq(senderId), Mockito.eq(serviceType));
+    }
+    
+    // test case: When invoking the getServices method, it must verify that the call
+    // was successful.
+    @Test
+    public void testGetServices() throws FogbowException {
+        // exercise
+        this.facade.getServices();
+
+        // verify
+        Mockito.verify(this.catalogService, Mockito.times(TestUtils.RUN_ONCE)).getServices();
     }
     
     // test case: When invoking the cacheSave method, it must verify that the call
