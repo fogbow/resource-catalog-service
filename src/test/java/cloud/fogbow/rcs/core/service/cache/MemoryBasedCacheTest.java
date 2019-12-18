@@ -61,4 +61,52 @@ class MemoryBasedCacheTest extends BaseUnitTests {
         // verify
         Assert.assertFalse(cacheService.has(ANY_KEY));
     }
+    
+    // test case: Checks that empty cache does not have a mapping to the key
+    // passed by parameter.
+    @Test
+    public void testCacheHasNotMappingForKey() throws FogbowException {
+        // setup
+        CacheService<String> cacheService = new MemoryBasedCache<String>();
+
+        // exercise
+        boolean result = cacheService.has(ANY_KEY);
+
+        // verify
+        Assert.assertFalse(result);
+    }
+    
+    // test case: Checks if the cache service can get the data from the key.
+    @Test
+    public void testGetDataFromCacheService() throws FogbowException {
+        // setup
+        CacheService<String> cacheService = new MemoryBasedCache<String>();
+        cacheService.set(ANY_KEY, ANY_DATA);
+        
+        String expected = ANY_DATA;
+
+        // exercise
+        String actual = cacheService.get(ANY_KEY);
+
+        // verify
+        Assert.assertEquals(expected, actual);
+    }
+    
+    // test case: Checks if set data in the cache service has been successfully
+    // removed.
+    @Test
+    public void testUnsetSuccessful() throws FogbowException {
+        // setup
+        CacheService<String> cacheService = new MemoryBasedCache<String>();
+        cacheService.set(ANY_KEY, ANY_DATA);
+
+        Assert.assertTrue(cacheService.has(ANY_KEY));
+
+        // exercise
+        cacheService.unset(ANY_KEY);
+
+        // verify
+        Assert.assertFalse(cacheService.has(ANY_KEY));
+    }
+    
 }
