@@ -32,17 +32,21 @@ import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
 
-
-@PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, CacheServiceHolder.class,
-                  RemoteGetServiceRequest.class, RemoteGetAllServicesRequest.class})
+@PrepareForTest({ 
+    CacheServiceHolder.class, 
+    HttpRequestClient.class, 
+    InetAddress.class, 
+    MembershipServiceResponse.class, 
+    RemoteGetServiceRequest.class, 
+    RemoteGetAllServicesRequest.class
+})
 public class CatalogServiceTest extends BaseUnitTests {
 
     private static final String BUILDER_METHOD = "builder";
-
-    private CatalogService service;
-
     private static final String RAS_LOCATION = "/rcs/services/member1-ms/ras";
     private static final String AS_LOCATION = "/rcs/services/member1-ms/as";
+
+    private CatalogService service;
     
     @Before
     public void setUp() {
