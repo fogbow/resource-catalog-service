@@ -40,7 +40,8 @@ public class CatalogService {
     public static final String SERVICE_ENDPOINT_FORMAT = "/rcs/services/%s/%s";
     public static final String SERVICE_URL_FORMAT = "%s:%s/v2/api-docs";
     public static final String URL_PREFFIX_ADDRESS = "https://";
-    
+    public static final String LOCAL_CATALOG_URL_FORMAT = "%s:%s/swagger-ui.html";
+
     private static final int FIRST_POSITION = 0;
 
     private final String SERVICE_PROPERTY_SEPARATOR = "_";
@@ -59,7 +60,7 @@ public class CatalogService {
     public List<Service> getMemberServices(String member) throws FogbowException {
         List<Service> services = new ArrayList<>();
         if (member.equals(getLocalMember())) {
-            services.add(getLocalCatalog());
+            services.addAll(getLocalCatalog());
         } else {
             services.addAll(getRemoteCatalogFrom(member));
         }
@@ -121,10 +122,17 @@ public class CatalogService {
     }
 
     @VisibleForTesting
-    Service getLocalCatalog() throws FogbowException {
+    List<Service> getLocalCatalog() throws FogbowException {
         try {
-            String localHost = getLocalHostProvider();
-            return new Service(ServiceType.LOCAL, getHostAddress(localHost));
+            List<ServiceType> serviceTypes = this.getServices();
+            List<Service> services = new ArrayList<>();
+
+            for (ServiceType type : serviceTypes) {
+                String location = String.format(LOCAL_CATALOG_URL_FORMAT, this.getServiceUrl(type), this.getServicePort(type));
+                services.add(new Service(type, location));
+            }
+
+            return services;
         } catch (Exception e) {
             String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
             throw new UnexpectedException(message, e);
