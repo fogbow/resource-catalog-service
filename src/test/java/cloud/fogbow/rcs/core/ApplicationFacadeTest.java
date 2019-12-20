@@ -45,7 +45,7 @@ public class ApplicationFacadeTest extends BaseUnitTests {
     public void testGetServicesFromMember() throws FogbowException {
         // exercise
         List<Service> services = new ArrayList<>();
-        services.add(this.testUtils.createLocalService());
+        services.addAll(this.testUtils.createServicesList());
 
         String member = TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX];
         Mockito.when(this.catalogService.getMemberServices(Mockito.eq(member))).thenReturn(services);

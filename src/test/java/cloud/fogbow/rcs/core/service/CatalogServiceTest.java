@@ -13,7 +13,6 @@ import cloud.fogbow.rcs.core.exceptions.NoSuchMemberException;
 import cloud.fogbow.rcs.core.intercomponent.xmpp.requesters.RemoteGetAllServicesRequest;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -32,7 +31,6 @@ import cloud.fogbow.rcs.core.TestUtils;
 import cloud.fogbow.rcs.core.models.MembershipServiceResponse;
 import cloud.fogbow.rcs.core.models.Service;
 import cloud.fogbow.rcs.core.models.ServiceType;
-
 
 @PrepareForTest({ HttpRequestClient.class, InetAddress.class, MembershipServiceResponse.class, CacheServiceHolder.class,
                   RemoteGetServiceRequest.class, RemoteGetAllServicesRequest.class})
@@ -79,15 +77,14 @@ public class CatalogServiceTest extends BaseUnitTests {
     
     // test case: When invoking the getMemberServices method from local member, it
     // must verify that the call was successful.
-    @Ignore
     @Test
     public void testGetMemberServicesLocal() throws FogbowException {
         // set up
         String member = TestUtils.MEMBERS[TestUtils.REMOTE_MEMBER_INDEX];
         Mockito.doReturn(member).when(this.service).getLocalMember();
 
-        Service service = new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
-        Mockito.doReturn(service).when(this.service).getLocalCatalog();
+        List<Service> services = this.testUtils.createServicesList();
+        Mockito.doReturn(services).when(this.service).getLocalCatalog();
 
         // exercise
         this.service.getMemberServices(member);
@@ -211,42 +208,27 @@ public class CatalogServiceTest extends BaseUnitTests {
     
     // test case: When invoking the getLocalCatalog method, it must verify that the
     // call was successful.
-    @Ignore
     @Test
     public void testGetLocalCatalog() throws Exception {
         // set up
-        String localHost = CatalogService.URL_PREFFIX_ADDRESS.concat(TestUtils.MEMBERS[TestUtils.LOCAL_MEMBER_INDEX]);
-        Mockito.doReturn(localHost).when(this.service).getLocalHostProvider();
+        ServiceType serviceType = ServiceType.MS;
+        List<ServiceType> types = new ArrayList<>();
+        types.add(serviceType);
+        Mockito.doReturn(types).when(this.service).getServices();
 
-        Mockito.doReturn(TestUtils.FAKE_LOCAL_MEMBER_URL).when(this.service).getHostAddress(Mockito.eq(localHost));
+        String url = String.format(CatalogService.FORMAT_SERVICE_S_URL_KEY, serviceType.getName());
+        Mockito.doReturn(url).when(this.service).getServiceUrl(Mockito.eq(serviceType));
+
+        String port = String.format(CatalogService.FORMAT_SERVICE_S_PORT_KEY, serviceType.getName());
+        Mockito.doReturn(port).when(this.service).getServicePort(Mockito.eq(serviceType));
 
         // exercise
         this.service.getLocalCatalog();
 
         // verify
-        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getLocalHostProvider();
-        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getHostAddress(Mockito.eq(localHost));
-    }
-    
-    // test case: When invoking the getLocalCatalog method, and a problem occurs, it
-    // must verify that an UnexpectedException was thrown.
-    @Ignore
-    @Test
-    public void testGetLocalCatalogFail() throws Exception {
-        // set up
-        Exception exception = new UnknownHostException();
-        Mockito.doThrow(exception).when(this.service).getLocalHostProvider();
-
-        String expected = String.format(Messages.Exception.GENERIC_EXCEPTION, exception.getMessage());
-
-        try {
-            // exercise
-            this.service.getLocalCatalog();
-            Assert.fail();
-        } catch (UnexpectedException e) {
-            // verify
-            Assert.assertEquals(expected, e.getMessage());
-        }
+        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getServices();
+        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getServiceUrl(Mockito.eq(serviceType));
+        Mockito.verify(this.service, Mockito.times(TestUtils.RUN_ONCE)).getServicePort(Mockito.eq(serviceType));
     }
     
     // test case: When invoking the listMembersFrom method, it must verify that the

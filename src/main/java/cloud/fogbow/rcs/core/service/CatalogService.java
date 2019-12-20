@@ -1,7 +1,6 @@
 package cloud.fogbow.rcs.core.service;
 
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,31 +121,16 @@ public class CatalogService {
     }
 
     @VisibleForTesting
-    List<Service> getLocalCatalog() throws FogbowException {
-        try {
-            List<ServiceType> serviceTypes = this.getServices();
-            List<Service> services = new ArrayList<>();
+    List<Service> getLocalCatalog() {
+        List<ServiceType> serviceTypes = this.getServices();
+        List<Service> services = new ArrayList<>();
 
-            for (ServiceType type : serviceTypes) {
-                String location = String.format(LOCAL_CATALOG_URL_FORMAT, this.getServiceUrl(type), this.getServicePort(type));
-                services.add(new Service(type, location));
-            }
-
-            return services;
-        } catch (Exception e) {
-            String message = String.format(Messages.Exception.GENERIC_EXCEPTION, e.getMessage());
-            throw new UnexpectedException(message, e);
+        for (ServiceType type : serviceTypes) {
+            String location = String.format(LOCAL_CATALOG_URL_FORMAT, this.getServiceUrl(type), this.getServicePort(type));
+            services.add(new Service(type, location));
         }
-    }
-    
-    @VisibleForTesting
-    String getHostAddress(String host) throws Exception {
-        return URL_PREFFIX_ADDRESS.concat(InetAddress.getByName(host).getCanonicalHostName()).concat(DOC_ENDPOINT);
-    }
-    
-    @VisibleForTesting
-    String getLocalHostProvider() throws Exception {
-        return new URL(URL_PREFFIX_ADDRESS.concat(getLocalMember())).getHost();
+
+        return services;
     }
     
     @VisibleForTesting
