@@ -93,7 +93,7 @@ public class TestUtils {
     }
     
     public Service createLocalService() {
-        return new Service(ServiceType.LOCAL, TestUtils.FAKE_LOCAL_MEMBER_URL);
+        return new Service(ServiceType.AS, TestUtils.FAKE_LOCAL_MEMBER_URL);
     }
 
     public String getCatalogSpec() throws IOException {
@@ -150,9 +150,9 @@ public class TestUtils {
     public String getLocalServicesListResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(SERVICES_LIST_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);
-        return String.format(rawJson, ServiceType.LOCAL.getName(), FAKE_LOCAL_MEMBER_URL);
+        return String.format(rawJson, ServiceType.AS.getName(), FAKE_LOCAL_MEMBER_URL);
     }
-    
+
     public String getMembersListResponseContent() throws IOException {
         String pathFile = getPathFile(RESOURCES_API_HTTP_RESPONSE_PATH.concat(MEMBERS_LIST_JSON_FILE_NAME));
         String rawJson = readFileAsString(pathFile);
